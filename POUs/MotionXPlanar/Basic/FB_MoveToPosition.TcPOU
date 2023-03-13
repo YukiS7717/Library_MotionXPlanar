@@ -73,7 +73,7 @@ CASE THIS^.uiState OF
 	xycPosition.SetValuesXYC(x:= dutPosition.x, y:= dutPosition.y, c:= 0);
 	fbConstraint.SetValuesVADJ(V:= THIS^.lrVelocity, A:= THIS^.lrAcceleration, D:= THIS^.lrDeceleration, J:= THIS^.lrJerk);
 	THIS^.fbMover.MoveToPosition(
-		commandFeedback:= fbFB_Mover, 
+		commandFeedback:= THIS^.fbFB_Mover, 
 		targetPosition:= xycPosition, 
 		constraint:= fbConstraint, 
 		options:= 0);
