@@ -7,7 +7,6 @@ VAR_IN_OUT
 END_VAR
 VAR_INPUT
 	Execute								: BOOL;
-	Position							: DUT_Position;
 	Velocity							: LREAL;
 	Acceleration						: LREAL;
 	Deceleration						: LREAL;
@@ -23,8 +22,6 @@ END_VAR
 VAR
 	uiState								: UINT;
 	//Input 内部変数
-	xycPosition							: PositionXYC;
-	dutPosition							: DUT_Position;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
 	lrDeceleration						: LREAL;
@@ -49,20 +46,50 @@ Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
     <Method Name="METH_Busy" Id="{4395d28f-b8f3-49b4-8d22-8cd6842dbe55}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[IF fbFB_Mover.Error THEN
+	METH_Error();
+	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
+	RETURN;
+END_IF
+IF THIS^.fbMover.MCTOPLC.STD.State = MC_PLANAR_STATE.Error THEN
+	METH_Error();
+	Prop_ErrorID := 1; //Moverがエラー
+	RETURN;
+END_IF
+IF fbFB_Mover.Aborted THEN
+	METH_CommandAborted();
+	RETURN;
+END_IF
+
+CASE THIS^.uiState OF
+	0:
+	fbConstraint.SetValuesVADJ(V:= THIS^.lrVelocity, A:= THIS^.lrAcceleration, D:= THIS^.lrDeceleration, J:= THIS^.lrJerk);
+	THIS^.fbMover.Halt(
+		commandFeedback:= THIS^.fbFB_Mover, 
+		constraint:= fbConstraint);
+
+	THIS^.uiState := 10;	
+	
+	10:
+	IF fbFB_Mover.Done THEN
+		THIS^.uiState := 16#FFFF;	
+	END_IF
+	
+	16#FFFF:
+	METH_Done();
+END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{8c82b2eb-0c66-469d-a002-b744e92d735e}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Input 内部変数に移す
-dutPosition := Position;
 lrVelocity := Velocity;
 lrAcceleration := Acceleration;
 lrDeceleration := Deceleration;
@@ -71,7 +98,7 @@ lrJerk := Jerk;
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{778cc574-70fa-4e82-9721-9883267da3d1}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
@@ -83,7 +110,6 @@ Prop_ErrorID := 0;
 
 // 内部変数をリフレッシュする
 uiState := 0;
-xycPosition.SetValuesXYC(0,0,0);
 lrVelocity := 0;
 lrAcceleration := 0;
 lrDeceleration := 0;
@@ -91,7 +117,7 @@ lrJerk := 0;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{fb6b4bef-a47f-46e5-a4bf-2f074f1be276}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
@@ -133,14 +159,19 @@ END_IF]]></ST>
       <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="FB_Halt.METH_Busy">
+      <LineId Id="7" Count="17" />
+      <LineId Id="39" Count="2" />
+      <LineId Id="29" Count="9" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_Halt.METH_Enter">
-      <LineId Id="7" Count="5" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="3" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_Halt.METH_Exit">
-      <LineId Id="7" Count="11" />
+      <LineId Id="7" Count="7" />
+      <LineId Id="16" Count="2" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_Halt.METH_Main">
