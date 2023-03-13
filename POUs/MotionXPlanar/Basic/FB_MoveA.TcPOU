@@ -23,7 +23,6 @@ END_VAR
 VAR
 	uiState								: UINT;
 	//Input 内部変数
-	xycPosition							: PositionXYC;
 	dutPosition							: DUT_Position;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
@@ -33,7 +32,6 @@ VAR
 	//ローカル
 	fbFB_Mover							: MC_PlanarFeedback;
 	fbConstraint						: DynamicConstraint_PathXY;
-	stMoveCOptions						: ST_MoveCOptions;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -71,13 +69,11 @@ END_IF
 CASE THIS^.uiState OF
 	0:
 	fbConstraint.SetValuesVADJ(V:= THIS^.lrVelocity, A:= THIS^.lrAcceleration, D:= THIS^.lrDeceleration, J:= THIS^.lrJerk);
-	//ノンモジュロ設定有効
-	stMoveCOptions.direction := Tc3_Mc3PlanarMotion.MC_DIRECTION.mcDirectionNonModulo;
-	THIS^.fbMover.MoveC(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= dutPosition.c, 
-		constraint:= fbConstraint, 
-		options:= stMoveCOptions);
+	THIS^.fbMover.MoveA(
+		commandFeedback:= THIS^.fbFB_Mover, 
+		targetPosition:= dutPosition.a, 
+		constraint:= fbConstraint);
+
 	THIS^.uiState := 10;	
 	
 	10:
@@ -117,7 +113,6 @@ Prop_ErrorID := 0;
 
 // 内部変数をリフレッシュする
 uiState := 0;
-xycPosition.SetValuesXYC(0,0,0);
 lrVelocity := 0;
 lrAcceleration := 0;
 lrDeceleration := 0;
@@ -169,10 +164,10 @@ END_IF]]></ST>
     <LineIds Name="FB_MoveA.METH_Busy">
       <LineId Id="7" Count="16" />
       <LineId Id="101" Count="0" />
-      <LineId Id="103" Count="0" />
-      <LineId Id="102" Count="0" />
-      <LineId Id="93" Count="0" />
-      <LineId Id="97" Count="3" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="114" Count="1" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="100" Count="0" />
       <LineId Id="104" Count="1" />
       <LineId Id="94" Count="0" />
       <LineId Id="107" Count="2" />
@@ -185,7 +180,8 @@ END_IF]]></ST>
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_MoveA.METH_Exit">
-      <LineId Id="7" Count="11" />
+      <LineId Id="7" Count="7" />
+      <LineId Id="16" Count="2" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_MoveA.METH_Main">
