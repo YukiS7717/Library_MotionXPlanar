@@ -23,7 +23,6 @@ END_VAR
 VAR
 	uiState								: UINT;
 	//Input 内部変数
-	xycPosition							: PositionXYC;
 	dutPosition							: DUT_Position;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
@@ -74,7 +73,7 @@ CASE THIS^.uiState OF
 	//ノンモジュロ設定有効
 	stMoveCOptions.direction := Tc3_Mc3PlanarMotion.MC_DIRECTION.mcDirectionNonModulo;
 	THIS^.fbMover.MoveC(
-		commandFeedback:= fbFB_Mover, 
+		commandFeedback:= THIS^.fbFB_Mover, 
 		targetPosition:= dutPosition.c, 
 		constraint:= fbConstraint, 
 		options:= stMoveCOptions);
@@ -117,7 +116,6 @@ Prop_ErrorID := 0;
 
 // 内部変数をリフレッシュする
 uiState := 0;
-xycPosition.SetValuesXYC(0,0,0);
 lrVelocity := 0;
 lrAcceleration := 0;
 lrDeceleration := 0;
@@ -185,7 +183,8 @@ END_IF]]></ST>
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_MoveC.METH_Exit">
-      <LineId Id="7" Count="11" />
+      <LineId Id="7" Count="7" />
+      <LineId Id="16" Count="2" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_MoveC.METH_Main">
