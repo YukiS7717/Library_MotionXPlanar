@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_MoveA" Id="{4cb3418a-78dc-4390-9ab8-6839788d286c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_MoveA EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+VAR_IN_OUT
+	fbMover								: MC_PlanarMover;
+END_VAR
+VAR_INPUT
+	Execute								: BOOL;
+	Position							: DUT_Position;
+	Velocity							: LREAL;
+	Acceleration						: LREAL;
+	Deceleration						: LREAL;
+	Jerk								: LREAL;
+END_VAR
+VAR_OUTPUT
+	Done								: BOOL;
+	Busy								: BOOL;
+	CommandAborted						: BOOL;
+	Error								: BOOL;
+	ErrorID								: UDINT;
+END_VAR
+VAR
+	uiState								: UINT;
+	//Input 内部変数
+	xycPosition							: PositionXYC;
+	dutPosition							: DUT_Position;
+	lrVelocity							: LREAL;
+	lrAcceleration						: LREAL;
+	lrDeceleration						: LREAL;
+	lrJerk								: LREAL;
+	
+	//ローカル
+	fbFB_Mover							: MC_PlanarFeedback;
+	fbConstraint						: DynamicConstraint_PathXY;
+	stMoveCOptions						: ST_MoveCOptions;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Prop_Execute := Execute;
+METH_Main();
+
+fbFB_Mover.Update();
+
+Busy := bBusy;
+Done := bDone;
+CommandAborted := bCommandAborted;
+Error := bError;
+ErrorID := udiErrorID;]]></ST>
+    </Implementation>
+    <Method Name="METH_Busy" Id="{3b9d7e17-f7be-4e3a-88ef-330da940cc02}">
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Busy : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF fbFB_Mover.Error THEN
+	METH_Error();
+	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
+	RETURN;
+END_IF
+IF THIS^.fbMover.MCTOPLC.STD.State = MC_PLANAR_STATE.Error THEN
+	METH_Error();
+	Prop_ErrorID := 1; //Moverがエラー
+	RETURN;
+END_IF
+IF fbFB_Mover.Aborted THEN
+	METH_CommandAborted();
+	RETURN;
+END_IF
+
+CASE THIS^.uiState OF
+	0:
+	fbConstraint.SetValuesVADJ(V:= THIS^.lrVelocity, A:= THIS^.lrAcceleration, D:= THIS^.lrDeceleration, J:= THIS^.lrJerk);
+	//ノンモジュロ設定有効
+	stMoveCOptions.direction := Tc3_Mc3PlanarMotion.MC_DIRECTION.mcDirectionNonModulo;
+	THIS^.fbMover.MoveC(
+		commandFeedback:= fbFB_Mover, 
+		targetPosition:= dutPosition.c, 
+		constraint:= fbConstraint, 
+		options:= stMoveCOptions);
+	THIS^.uiState := 10;	
+	
+	10:
+	IF fbFB_Mover.Done THEN
+		THIS^.uiState := 16#FFFF;	
+	END_IF
+	
+	16#FFFF:
+	METH_Done();
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Enter" Id="{a2bccc4f-0c37-4c75-81b7-a668f6bf5e28}">
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Enter : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Input 内部変数に移す
+dutPosition := Position;
+lrVelocity := Velocity;
+lrAcceleration := Acceleration;
+lrDeceleration := Deceleration;
+lrJerk := Jerk;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Exit" Id="{5b6c1e73-c1ad-41f0-94bd-cba02e0c757d}">
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Exit : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_Done := FALSE;
+Prop_Busy := FALSE;
+Prop_CommandAborted := FALSE;
+Prop_Error := FALSE;
+Prop_ErrorID := 0;
+
+// 内部変数をリフレッシュする
+uiState := 0;
+xycPosition.SetValuesXYC(0,0,0);
+lrVelocity := 0;
+lrAcceleration := 0;
+lrDeceleration := 0;
+lrJerk := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Main" Id="{8ddadc5e-718c-45c1-844a-e1556fb58719}">
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Main : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Doneに遷移
+IF SUPER^.bDone AND SUPER^.bExecute THEN
+	METH_Done();
+	RETURN;
+END_IF
+//Errorに遷移
+IF SUPER^.bError AND SUPER^.bExecute THEN
+	METH_Error();
+	RETURN;
+END_IF
+//CommandAbortedに遷移
+IF SUPER^.bCommandAborted AND SUPER^.bExecute THEN
+	METH_CommandAborted();
+	RETURN;
+END_IF
+//FBをリフレッシュ
+//状態がDone, Error, CommandAborted時に Execute FALSE で遷移
+IF (SUPER^.bDone OR SUPER^.bError OR SUPER^.bCommandAborted) AND NOT SUPER^.bExecute THEN
+	METH_Exit();
+	RETURN;
+END_IF
+
+//実行開始
+IF SUPER^.bExecute AND NOT SUPER^.bBusy THEN
+	METH_Execute();
+	METH_Enter();
+END_IF
+//実行中
+IF SUPER^.bBusy THEN
+	METH_Busy();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_MoveA">
+      <LineId Id="49" Count="8" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoveA.METH_Busy">
+      <LineId Id="7" Count="16" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="97" Count="3" />
+      <LineId Id="104" Count="1" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="107" Count="2" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="95" Count="1" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoveA.METH_Enter">
+      <LineId Id="7" Count="5" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoveA.METH_Exit">
+      <LineId Id="7" Count="11" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoveA.METH_Main">
+      <LineId Id="7" Count="29" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
