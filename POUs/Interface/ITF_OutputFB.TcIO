@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="ITF_OutputFB" Id="{8b1bbf72-efd5-49f3-86e9-925fdb49af8d}">
+    <Declaration><![CDATA[INTERFACE ITF_OutputFB
+]]></Declaration>
+    <Method Name="METH_Busy" Id="{a4ba4aa6-a588-4af8-95fc-c57d9af9f80c}">
+      <Declaration><![CDATA[METHOD METH_Busy : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="METH_CommandAborted" Id="{992e203b-d4a3-432c-a4d1-c83310597c4f}">
+      <Declaration><![CDATA[METHOD METH_CommandAborted : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="METH_Done" Id="{48a29210-802e-4c27-8eea-826b103ad608}">
+      <Declaration><![CDATA[METHOD METH_Done : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="METH_Error" Id="{163b91ad-0f2d-4e66-8fc6-f5d5c9bfe9fd}">
+      <Declaration><![CDATA[METHOD METH_Error : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="Prop_Busy" Id="{0ae63a25-dda6-4fdf-a2d0-718b27447b6e}">
+      <Declaration><![CDATA[PROPERTY Prop_Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8c7ae791-63ae-4818-920c-c4d3155e786c}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{8145db13-f434-4cca-bff5-09336d03e32e}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="Prop_CommandAborted" Id="{1819a22f-6f9d-468a-8c75-ad64496dd101}">
+      <Declaration><![CDATA[PROPERTY Prop_CommandAborted : BOOL]]></Declaration>
+      <Get Name="Get" Id="{08bb7552-8fb7-48bc-90f3-0e1d52e7edcc}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{85cc4ea4-7b62-448b-8a84-3d37261d27a4}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="Prop_Done" Id="{6dd50ba9-f161-4afb-a348-f364bee9c1e4}">
+      <Declaration><![CDATA[PROPERTY Prop_Done : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2875a6f6-08ef-4b7f-b826-37ad48137ef0}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{7a4e1295-9536-4f45-8b77-4b203199bd5d}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="Prop_Error" Id="{775ebd90-f293-49cf-8033-bdebfb70fa31}">
+      <Declaration><![CDATA[PROPERTY Prop_Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f7f9c8d6-f4e8-4d82-b722-aad33bdd8f49}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{d3f70192-d157-4875-b886-014b91d83d0a}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="Prop_ErrorID" Id="{dcc2ef0b-951e-4f14-8862-37a4cf5c8ed1}">
+      <Declaration><![CDATA[PROPERTY Prop_ErrorID : UDINT]]></Declaration>
+      <Get Name="Get" Id="{eb873809-341b-460f-a4c3-3e4d884512dd}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{4d95d7ea-2be7-4f2e-8c26-268c754007c2}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

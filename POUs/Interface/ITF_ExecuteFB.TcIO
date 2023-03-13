@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="ITF_ExecuteFB" Id="{58398a5e-c214-4b5a-94e2-29c761dbf7a8}">
+    <Declaration><![CDATA[INTERFACE ITF_ExecuteFB
+]]></Declaration>
+    <Method Name="METH_Execute" Id="{2b2c89fe-1afb-4208-acac-2f31a9377c99}">
+      <Declaration><![CDATA[METHOD METH_Execute : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="Prop_Execute" Id="{c863c6a7-de79-4c1d-b36b-0fab991e0c16}">
+      <Declaration><![CDATA[PROPERTY Prop_Execute : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f741c660-dbc8-4ad0-9589-640fd028184c}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{63262b3e-b562-4087-a5e9-11c6e51c39fa}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

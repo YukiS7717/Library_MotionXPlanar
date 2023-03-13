@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="ITF_ExtendsFB" Id="{c6e40e5e-442c-4a49-b536-226e248b2683}">
+    <Declaration><![CDATA[INTERFACE ITF_ExtendsFB
+]]></Declaration>
+    <Method Name="METH_Busy" Id="{4f10d595-3ffa-46e4-a42b-ae8e174fbfb7}">
+      <Declaration><![CDATA[METHOD METH_Busy : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="METH_Enter" Id="{8973ab4f-b37b-4074-95c8-597526905cb0}">
+      <Declaration><![CDATA[METHOD METH_Enter : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="METH_Exit" Id="{dc43ac5a-22a2-46b6-9103-2bf8486a69cd}">
+      <Declaration><![CDATA[METHOD METH_Exit : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="METH_Main" Id="{a75fdc14-29da-4e26-9db0-0d3d5288628f}">
+      <Declaration><![CDATA[METHOD METH_Main : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

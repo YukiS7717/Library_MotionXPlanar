@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="ITF_StXPlanarData" Id="{d4a5d8a6-8c30-4b1e-85f4-9c54cece3e98}">
+    <Declaration><![CDATA[INTERFACE ITF_StXPlanarData
+]]></Declaration>
+    <Folder Name="ActPosition" Id="{9f86944a-5632-4a79-92d0-82dda4947a7d}" />
+    <Folder Name="ActVelocity" Id="{1536e60a-8355-48b4-b9a6-62a36f6ea458}" />
+    <Folder Name="General" Id="{7f738e60-d0e2-4dcf-a7b4-064951a22761}" />
+    <Folder Name="SetPosition" Id="{51cb4034-4046-41ba-8147-5416a760375a}" />
+    <Folder Name="SetVelocity" Id="{cfed00c3-dfcc-49b2-83a5-577665405986}" />
+    <Method Name="GetActPosition_a" Id="{bfa91d34-3ac4-4003-b6c1-15d627cdf73b}" FolderPath="ActPosition\">
+      <Declaration><![CDATA[METHOD GetActPosition_a : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActPosition_b" Id="{ffd0ea55-1e58-4ff1-bcad-83ae753b11c5}" FolderPath="ActPosition\">
+      <Declaration><![CDATA[METHOD GetActPosition_b : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActPosition_c" Id="{5cade55d-863c-415d-bae8-b976acfc1580}" FolderPath="ActPosition\">
+      <Declaration><![CDATA[METHOD GetActPosition_c : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActPosition_x" Id="{b23909f2-2b19-4486-8635-940145e05524}" FolderPath="ActPosition\">
+      <Declaration><![CDATA[METHOD GetActPosition_x : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActPosition_y" Id="{bfabc8fa-b53f-49b9-a715-7932e8cd6dd9}" FolderPath="ActPosition\">
+      <Declaration><![CDATA[METHOD GetActPosition_y : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActPosition_z" Id="{ff612bb5-b330-48f2-bd02-15670de0c986}" FolderPath="ActPosition\">
+      <Declaration><![CDATA[METHOD GetActPosition_z : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActVelocity_a" Id="{8581d706-7c8b-4d83-a112-ebd5e2684a86}" FolderPath="ActVelocity\">
+      <Declaration><![CDATA[METHOD GetActVelocity_a : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActVelocity_b" Id="{5c8726ce-1123-40d0-be8b-f4530bd4b586}" FolderPath="ActVelocity\">
+      <Declaration><![CDATA[METHOD GetActVelocity_b : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActVelocity_c" Id="{83348c79-efa6-4cf9-b226-19d0e95bf7ea}" FolderPath="ActVelocity\">
+      <Declaration><![CDATA[METHOD GetActVelocity_c : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActVelocity_x" Id="{e5ccc97e-9d3c-47f8-aa41-f22bfc6a8c87}" FolderPath="ActVelocity\">
+      <Declaration><![CDATA[METHOD GetActVelocity_x : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActVelocity_y" Id="{cabe5df3-33f4-4f51-9a0d-6cfb51c628ec}" FolderPath="ActVelocity\">
+      <Declaration><![CDATA[METHOD GetActVelocity_y : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetActVelocity_z" Id="{62f392d3-b68a-42bc-a574-b5a5f5e7131f}" FolderPath="ActVelocity\">
+      <Declaration><![CDATA[METHOD GetActVelocity_z : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetDemoState" Id="{6a55e44f-b458-4ad6-8dbe-e92c2570cf4e}" FolderPath="General\">
+      <Declaration><![CDATA[METHOD GetDemoState : UINT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetErrorID" Id="{ecb6db72-0354-4e85-8b5e-9312406c4ad2}" FolderPath="General\">
+      <Declaration><![CDATA[METHOD GetErrorID : UINT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetPosition_a" Id="{9087e757-3cb8-4e02-a423-e1d55c80bb85}" FolderPath="SetPosition\">
+      <Declaration><![CDATA[METHOD GetSetPosition_a : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetPosition_b" Id="{7f910f6a-6b1a-4cbe-b801-794f15bed3a2}" FolderPath="SetPosition\">
+      <Declaration><![CDATA[METHOD GetSetPosition_b : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetPosition_c" Id="{cb05932a-14c9-456f-b9c1-872686933705}" FolderPath="SetPosition\">
+      <Declaration><![CDATA[METHOD GetSetPosition_c : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetPosition_x" Id="{599e8411-cf6b-4c96-8adb-a54303a8f847}" FolderPath="SetPosition\">
+      <Declaration><![CDATA[METHOD GetSetPosition_x : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetPosition_y" Id="{40f5d1f7-fb07-46a9-ab8e-f24005c021e2}" FolderPath="SetPosition\">
+      <Declaration><![CDATA[METHOD GetSetPosition_y : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetPosition_z" Id="{ec0e125a-20e4-4fac-a7e3-4105d85835c3}" FolderPath="SetPosition\">
+      <Declaration><![CDATA[METHOD GetSetPosition_z : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetVelocity_a" Id="{b61680ea-4f44-4a21-bc0a-d4a8a52a5390}" FolderPath="SetVelocity\">
+      <Declaration><![CDATA[METHOD GetSetVelocity_a : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetVelocity_b" Id="{757d08ef-10f2-41ee-b4dd-0ed22f94c90a}" FolderPath="SetVelocity\">
+      <Declaration><![CDATA[METHOD GetSetVelocity_b : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetVelocity_c" Id="{130ca3fb-38f0-4391-8156-3abf35ec9b38}" FolderPath="SetVelocity\">
+      <Declaration><![CDATA[METHOD GetSetVelocity_c : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetVelocity_x" Id="{8fbd6155-e991-4309-9874-8bd31a01a1cc}" FolderPath="SetVelocity\">
+      <Declaration><![CDATA[METHOD GetSetVelocity_x : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetVelocity_y" Id="{070d2e88-f9d3-494d-815c-cbd2774de977}" FolderPath="SetVelocity\">
+      <Declaration><![CDATA[METHOD GetSetVelocity_y : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetSetVelocity_z" Id="{acee6958-fa2b-45f6-92eb-90edee481510}" FolderPath="SetVelocity\">
+      <Declaration><![CDATA[METHOD GetSetVelocity_z : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetState" Id="{e97120e8-7c84-4bfb-8a17-255cbdcf363b}" FolderPath="General\">
+      <Declaration><![CDATA[METHOD GetState : UINT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetStateError" Id="{685718f8-e98a-42e1-8f7f-f641e26149a6}" FolderPath="General\">
+      <Declaration><![CDATA[METHOD GetStateError : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="GetTimeStamp" Id="{d6e412f3-ff95-45ef-838b-55a85370545f}" FolderPath="General\">
+      <Declaration><![CDATA[METHOD GetTimeStamp : ULINT
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

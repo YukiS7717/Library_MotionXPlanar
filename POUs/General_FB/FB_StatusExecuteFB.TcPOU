@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_StatusExecuteFB" Id="{e516f014-46df-44ec-97c8-73e45b9e696f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT FB_StatusExecuteFB IMPLEMENTS ITF_ExecuteFB, ITF_OutputFB
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	bExecute						: BOOL;
+	bBusy							: BOOL;
+	bCommandAborted					: BOOL;
+	bDone							: BOOL;
+	bError							: BOOL;
+	udiErrorID						: UDINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="METH_Busy" Id="{918b8f25-c626-48ea-a70b-55f92dd99173}">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD ABSTRACT METH_Busy : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_CommandAborted" Id="{51e10748-9e72-473f-aa9d-319f4f1e6bcc}">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD METH_CommandAborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_CommandAborted := TRUE;
+Prop_Busy := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Done" Id="{b7b8c3c3-b498-4ce3-976c-bfc9484a174f}">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD METH_Done : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_Done := TRUE;
+Prop_Busy := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Enter" Id="{77ecf3c7-9e28-4675-a8cc-ad5ea69c09ed}">
+      <Declaration><![CDATA[METHOD ABSTRACT METH_Enter : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Error" Id="{aefc3ee1-dc84-4c9f-9e89-af3800a3a314}">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD METH_Error : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_Error := TRUE;
+Prop_Busy := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Execute" Id="{e509b714-3430-4643-900e-47d9f5ddd8e5}">
+      <Declaration><![CDATA[{warning 'add method implementation '}
+METHOD METH_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_Execute := TRUE;
+Prop_Busy := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Exit" Id="{b0d3f8dd-59c5-4dfa-9083-f738b3ef32a7}">
+      <Declaration><![CDATA[METHOD ABSTRACT METH_Exit : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Main" Id="{21a644bb-9502-4494-bbac-363e4abcdda8}">
+      <Declaration><![CDATA[METHOD ABSTRACT METH_Main : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Prop_Busy" Id="{687c34c8-14e2-42ce-8883-4929a0eef52b}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Prop_Busy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{605219e2-96e6-4cdf-ad02-9ecddf01d821}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Prop_Busy := bBusy;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{5a8996d9-0585-4b9f-b753-27862b302f9a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bBusy := Prop_Busy;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Prop_CommandAborted" Id="{60e8468f-6c4c-4ccc-9e63-c3ba23a7257c}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Prop_CommandAborted : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{0585ac8c-9e13-4aae-a7ee-0c0874b2e5c1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Prop_CommandAborted := bCommandAborted;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{4e2814e9-a2f9-4362-8419-bc15204d0ef9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bCommandAborted := Prop_CommandAborted;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Prop_Done" Id="{0816f9c1-63c3-4d3f-bf2e-45264e233163}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Prop_Done : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{f93fcdcb-f39c-4abe-a4c4-9fb1a4986b42}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Prop_Done := bDone;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{4bc42ea0-4758-4c15-9793-7e5a04679619}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bDone := Prop_Done;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Prop_Error" Id="{c98e2946-d112-47af-b40c-3efc231c9cd3}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Prop_Error : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{ea341fa2-ea58-47b3-bdf3-45629afa5088}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Prop_Error := bError;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{5058ed39-21af-4898-8dc8-2b8150f9e879}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bError := Prop_Error;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Prop_ErrorID" Id="{c9573143-f19c-4ad5-a77e-12948ada30c1}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Prop_ErrorID : UDINT
+]]></Declaration>
+      <Get Name="Get" Id="{7ee3f127-db39-45f9-a306-e6f80e42449c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Prop_ErrorID := udiErrorID;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{b8fff8c5-867d-4037-8433-607ca4c151c9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[udiErrorID := Prop_ErrorID;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Prop_Execute" Id="{1d7bcb7f-35c2-4a72-80c2-d15dba6663ed}">
+      <Declaration><![CDATA[{warning 'add property implementation'}
+PROPERTY Prop_Execute : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{2975d7fa-9ea0-4ba8-b1cd-7bc703d0e5d9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Prop_Execute := bExecute;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{53c4ff88-10f6-4b49-8880-d62fbd0505e1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bExecute := Prop_Execute;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="FB_StatusExecuteFB">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Busy">
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_CommandAborted">
+      <LineId Id="10" Count="0" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Done">
+      <LineId Id="6" Count="0" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Enter">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Error">
+      <LineId Id="13" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Execute">
+      <LineId Id="6" Count="0" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Exit">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.METH_Main">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Busy.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Busy.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_CommandAborted.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_CommandAborted.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Done.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Done.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Error.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Error.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_ErrorID.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_ErrorID.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Execute.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_StatusExecuteFB.Prop_Execute.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

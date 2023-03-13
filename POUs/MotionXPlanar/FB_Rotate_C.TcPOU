@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Rotate_C" Id="{2a4ddaa4-4554-4520-af71-d3cc30323ba1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Rotate_C EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+VAR_IN_OUT
+	fbMover								: MC_PlanarMover;
+END_VAR
+VAR_INPUT
+	Execute								: BOOL;
+	Position							: DUT_Position;
+	Velocity							: LREAL;
+	Acceleration						: LREAL;
+	Deceleration						: LREAL;
+	Jerk								: LREAL;
+END_VAR
+VAR_OUTPUT
+	Done								: BOOL;
+	Busy								: BOOL;
+	CommandAborted						: BOOL;
+	Error								: BOOL;
+	ErrorID								: UDINT;
+END_VAR
+VAR
+	uiState								: UINT;
+	//Input 内部変数
+	xycPosition							: PositionXYC;
+	dutPosition							: DUT_Position;
+	lrVelocity							: LREAL;
+	lrAcceleration						: LREAL;
+	lrDeceleration						: LREAL;
+	lrJerk								: LREAL;
+	
+	//ローカル
+	fbFB_Mover							: MC_PlanarFeedback;
+	fbConstraint						: DynamicConstraint_PathXY;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Prop_Execute := Execute;
+METH_Main();
+
+fbFB_Mover.Update();
+
+Busy := bBusy;
+Done := bDone;
+CommandAborted := bCommandAborted;
+Error := bError;
+ErrorID := udiErrorID;]]></ST>
+    </Implementation>
+    <Method Name="METH_Busy" Id="{4b15cace-e6e9-4756-8aee-363e63ee931d}">
+      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Busy : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Enter" Id="{b4ad9405-bcca-40f1-8d0f-a7ff72000c1b}">
+      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Enter : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Input 内部変数に移す
+dutPosition := Position;
+lrVelocity := Velocity;
+lrAcceleration := Acceleration;
+lrDeceleration := Deceleration;
+lrJerk := Jerk;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Exit" Id="{792bcaaf-1c95-49d6-85d3-214c2cec9094}">
+      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Exit : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_Done := FALSE;
+Prop_Busy := FALSE;
+Prop_CommandAborted := FALSE;
+Prop_Error := FALSE;
+Prop_ErrorID := 0;
+
+// 内部変数をリフレッシュする
+uiState := 0;
+xycPosition.SetValuesXYC(0,0,0);
+lrVelocity := 0;
+lrAcceleration := 0;
+lrDeceleration := 0;
+lrJerk := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Main" Id="{985bdbbf-de12-429c-9993-2e6090ee64c5}">
+      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Main : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Doneに遷移
+IF SUPER^.bDone AND SUPER^.bExecute THEN
+	METH_Done();
+	RETURN;
+END_IF
+//Errorに遷移
+IF SUPER^.bError AND SUPER^.bExecute THEN
+	METH_Error();
+	RETURN;
+END_IF
+//CommandAbortedに遷移
+IF SUPER^.bCommandAborted AND SUPER^.bExecute THEN
+	METH_CommandAborted();
+	RETURN;
+END_IF
+//FBをリフレッシュ
+//状態がDone, Error, CommandAborted時に Execute FALSE で遷移
+IF (SUPER^.bDone OR SUPER^.bError OR SUPER^.bCommandAborted) AND NOT SUPER^.bExecute THEN
+	METH_Exit();
+	RETURN;
+END_IF
+
+//実行開始
+IF SUPER^.bExecute AND NOT SUPER^.bBusy THEN
+	METH_Execute();
+	METH_Enter();
+END_IF
+//実行中
+IF SUPER^.bBusy THEN
+	METH_Busy();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Rotate_C">
+      <LineId Id="49" Count="8" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Rotate_C.METH_Busy">
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Rotate_C.METH_Enter">
+      <LineId Id="7" Count="5" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Rotate_C.METH_Exit">
+      <LineId Id="7" Count="11" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Rotate_C.METH_Main">
+      <LineId Id="7" Count="29" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
