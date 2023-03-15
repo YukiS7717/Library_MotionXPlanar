@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="FB_MoveB" Id="{056ccfa0-1b69-4fa1-8e02-1a05b50942a5}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_MoveB EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+  <POU Name="FB_Rotate_C" Id="{1d12e508-7481-47a3-8123-90a5d6f7ea7d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Rotate_C EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 END_VAR
@@ -31,7 +31,9 @@ VAR
 	
 	//ローカル
 	fbFB_Mover							: MC_PlanarFeedback;
+	dutTargetPosition					: DUT_POSITION;
 	fbConstraint						: DynamicConstraint_PathXY;
+	fbMoveC								: FB_MoveC;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -46,7 +48,7 @@ CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
-    <Method Name="METH_Busy" Id="{cfc319b1-2d2d-4538-8f17-77385d880f57}">
+    <Method Name="METH_Busy" Id="{2e5d9356-2b9d-456e-9fd0-7632e3f39806}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Busy : BOOL
 ]]></Declaration>
@@ -68,17 +70,60 @@ END_IF
 
 CASE THIS^.uiState OF
 	0:
-	fbConstraint.SetValuesVADJ(V:= THIS^.lrVelocity, A:= THIS^.lrAcceleration, D:= THIS^.lrDeceleration, J:= THIS^.lrJerk);
-	THIS^.fbMover.MoveB(
-		commandFeedback:= THIS^.fbFB_Mover, 
-		targetPosition:= dutPosition.b, 
-		constraint:= fbConstraint);
-
-	THIS^.uiState := 10;	
+	//+Cに回転
+	dutTargetPosition.c := dutPosition.c;
+	fbMoveC(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
+	IF fbMoveC.Done THEN
+		fbMoveC(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := 10;
+	ELSIF fbMoveC.Error THEN
+		METH_Error();
+		Prop_ErrorID := 10; //Moverがエラー
+	END_IF
 	
 	10:
-	IF fbFB_Mover.Done THEN
-		THIS^.uiState := 16#FFFF;	
+	//-Cに回転
+	dutTargetPosition.c := (-1)*dutPosition.c;
+	fbMoveC(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
+	IF fbMoveC.Done THEN
+		fbMoveC(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := 20;
+	ELSIF fbMoveC.Error THEN
+		METH_Error();
+		Prop_ErrorID := 11; //Moverがエラー
+	END_IF
+	
+	20:
+	//+Cに回転
+	dutTargetPosition.c := 0;
+	fbMoveC(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
+	IF fbMoveC.Done THEN
+		fbMoveC(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := 16#FFFF;
+	ELSIF fbMoveC.Error THEN
+		METH_Error();
+		Prop_ErrorID := 12; //Moverがエラー
 	END_IF
 	
 	16#FFFF:
@@ -86,7 +131,7 @@ CASE THIS^.uiState OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Enter" Id="{9f31050b-7317-459e-b843-69b812138c7f}">
+    <Method Name="METH_Enter" Id="{7b58f715-6dd8-4ad1-87cd-5626f13a37ec}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
@@ -100,7 +145,7 @@ lrJerk := Jerk;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Exit" Id="{6cffb0ce-e496-4461-81f7-ef865a5f2da8}">
+    <Method Name="METH_Exit" Id="{b696b96d-1e70-4973-b4d2-885541b0de39}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
@@ -119,7 +164,7 @@ lrDeceleration := 0;
 lrJerk := 0;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Main" Id="{04b4cb2c-5fdd-4585-a000-6a7f041e44b7}">
+    <Method Name="METH_Main" Id="{af676c5b-5805-4c9d-86cf-b0757b092778}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
@@ -157,35 +202,32 @@ IF SUPER^.bBusy THEN
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="FB_MoveB">
-      <LineId Id="49" Count="8" />
+    <LineIds Name="FB_Rotate_C">
+      <LineId Id="42" Count="8" />
       <LineId Id="9" Count="0" />
     </LineIds>
-    <LineIds Name="FB_MoveB.METH_Busy">
-      <LineId Id="7" Count="16" />
-      <LineId Id="101" Count="0" />
-      <LineId Id="110" Count="0" />
-      <LineId Id="114" Count="1" />
-      <LineId Id="113" Count="0" />
-      <LineId Id="100" Count="0" />
-      <LineId Id="104" Count="1" />
-      <LineId Id="94" Count="0" />
-      <LineId Id="107" Count="2" />
-      <LineId Id="106" Count="0" />
-      <LineId Id="95" Count="1" />
+    <LineIds Name="FB_Rotate_C.METH_Busy">
+      <LineId Id="5" Count="17" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="23" Count="16" />
+      <LineId Id="185" Count="15" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="201" Count="15" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="92" Count="2" />
       <LineId Id="4" Count="0" />
     </LineIds>
-    <LineIds Name="FB_MoveB.METH_Enter">
-      <LineId Id="7" Count="5" />
+    <LineIds Name="FB_Rotate_C.METH_Enter">
+      <LineId Id="5" Count="5" />
       <LineId Id="4" Count="0" />
     </LineIds>
-    <LineIds Name="FB_MoveB.METH_Exit">
-      <LineId Id="7" Count="7" />
-      <LineId Id="16" Count="2" />
+    <LineIds Name="FB_Rotate_C.METH_Exit">
+      <LineId Id="5" Count="7" />
+      <LineId Id="14" Count="2" />
       <LineId Id="4" Count="0" />
     </LineIds>
-    <LineIds Name="FB_MoveB.METH_Main">
-      <LineId Id="7" Count="29" />
+    <LineIds Name="FB_Rotate_C.METH_Main">
+      <LineId Id="5" Count="29" />
       <LineId Id="4" Count="0" />
     </LineIds>
   </POU>

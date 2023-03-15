@@ -1,9 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="FB_Strring" Id="{ba5e848f-636f-4046-8cfa-0261863d9234}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Strring EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Strring EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
+	fbAxis_Master						: AXIS_REF;
+	fbAxis_Slave_x						: AXIS_REF;
+	fbAxis_Slave_y						: AXIS_REF;
+	fbAxis_Slave_z						: AXIS_REF;
+	fbAxis_Slave_a						: AXIS_REF;
+	fbAxis_Slave_b						: AXIS_REF;
+	fbAxis_Slave_c						: AXIS_REF;
 END_VAR
 VAR_INPUT
 	Execute								: BOOL;
@@ -23,7 +30,6 @@ END_VAR
 VAR
 	uiState								: UINT;
 	//Input 内部変数
-	xycPosition							: PositionXYC;
 	dutPosition							: DUT_Position;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
@@ -32,7 +38,47 @@ VAR
 	
 	//ローカル
 	fbFB_Mover							: MC_PlanarFeedback;
-	fbConstraint						: DynamicConstraint_PathXY;
+	fbMoveZ								: FB_MoveZ;
+	fbMoveB								: FB_MoveB;
+	fbMoveToPosition					: FB_MoveToPosition;
+	fbCamIn_S_x							: MC_CamIn;
+	fbCamIn_S_y							: MC_CamIn;
+	fbCamIn_S_a							: MC_CamIn;
+	fbCamIn_S_b							: MC_CamIn;
+	fbCamOut_S_x						: MC_CamOut;
+	fbCamOut_S_y						: MC_CamOut;
+	fbCamOut_S_a						: MC_CamOut;
+	fbCamOut_S_b						: MC_CamOut;
+	fbAbsolute_M						: MC_MoveAbsolute;
+	stMoverVector_ActPos				: MoverVector;
+	stMoverVector_ActVel				: MoverVector;
+	stMoverVector_ActAcc				: MoverVector;
+	dutTargetPosition					: DUT_Position;
+	bSetExternalSetPoint				: BOOL;
+	stExternalOpt						: ST_ExternalSetpointGenerationOptions;
+END_VAR
+
+VAR CONSTANT
+	//傾き量
+	lrStrringStartPos_x					: LREAL := -40;
+	lrStrringStartPos_z					: LREAL := 4;
+	lrStrringStartPos_b					: LREAL := -2;
+	lrStrringEndPos_z					: LREAL := 2;
+	lrStrringEndPos_b					: LREAL := 0;
+	
+	//State
+	State_StartPosition					: UINT := 0;
+	State_StartZ						: UINT := 10;
+	State_StartB						: UINT := 20;
+	State_StartExternal					: UINT := 30;
+	State_CamIn							: UINT := 40;
+	State_StrringPlus					: UINT := 50;
+	State_StrringMinus					: UINT := 60;
+	State_EndExternal					: UINT := 70;
+	State_CamOut						: UINT := 80;
+	State_EndPosition					: UINT := 90;
+	State_EndZ							: UINT := 100;
+	State_EndB							: UINT := 110;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[Prop_Execute := Execute;
@@ -46,244 +92,313 @@ CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
-    <Method Name="METH_Busy" Id="{3c2eac9c-d94b-4b60-9b22-37e9ee77f4f6}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Busy : BOOL
-]]></Declaration>
+    <Action Name="ACT_SetExternalSetPoint" Id="{921149fd-6397-4780-baf4-07335fd8cd99}">
       <Implementation>
-        <ST><![CDATA[fbFB_Mover.Update();
-IF fbFB_Mover.Aborted THEN
-	// Haltで止まった場合
-	methStrring := 16#FF;
-	iState := 0;
+        <ST><![CDATA[	stMoverVector_ActPos.x := THIS^.fbAxis_Slave_x.NcToPlc.ActPos;
+	stMoverVector_ActPos.y := THIS^.fbAxis_Slave_y.NcToPlc.ActPos;
+	stMoverVector_ActPos.z := THIS^.fbAxis_Slave_z.NcToPlc.ActPos;
+	stMoverVector_ActPos.a := THIS^.fbAxis_Slave_a.NcToPlc.ActPos;
+	stMoverVector_ActPos.b := THIS^.fbAxis_Slave_b.NcToPlc.ActPos;
+	stMoverVector_ActPos.c := THIS^.fbAxis_Slave_c.NcToPlc.ActPos;
+	
+	stMoverVector_ActVel.x := THIS^.fbAxis_Slave_x.NcToPlc.ActVelo;
+	stMoverVector_ActVel.y := THIS^.fbAxis_Slave_y.NcToPlc.ActVelo;
+	stMoverVector_ActVel.z := THIS^.fbAxis_Slave_z.NcToPlc.ActVelo;
+	stMoverVector_ActVel.a := THIS^.fbAxis_Slave_a.NcToPlc.ActVelo;
+	stMoverVector_ActVel.b := THIS^.fbAxis_Slave_b.NcToPlc.ActVelo;
+	stMoverVector_ActVel.c := THIS^.fbAxis_Slave_c.NcToPlc.ActVelo;
+	
+	stMoverVector_ActAcc.x := THIS^.fbAxis_Slave_x.NcToPlc.ActAcc;
+	stMoverVector_ActAcc.y := THIS^.fbAxis_Slave_y.NcToPlc.ActAcc;
+	stMoverVector_ActAcc.z := THIS^.fbAxis_Slave_z.NcToPlc.ActAcc;
+	stMoverVector_ActAcc.a := THIS^.fbAxis_Slave_a.NcToPlc.ActAcc;
+	stMoverVector_ActAcc.b := THIS^.fbAxis_Slave_b.NcToPlc.ActAcc;
+	stMoverVector_ActAcc.c := THIS^.fbAxis_Slave_c.NcToPlc.ActAcc;
+	
+	THIS^.fbMover.SetExternalSetpoint(
+		setPosition:= stMoverVector_ActPos, 
+		setVelocity:= stMoverVector_ActVel, 
+		setAcceleration:= stMoverVector_ActAcc);]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="METH_Busy" Id="{3c2eac9c-d94b-4b60-9b22-37e9ee77f4f6}">
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Busy : BOOL
+VAR
+	iForAxis 					: INT;
+	Axis_B: AXIS_REF;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF fbFB_Mover.Error THEN
+	METH_Error();
+	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
 	RETURN;
-ELSIF fbFB_Mover.Error THEN
-	// Errorで止まった場合
-	methStrring := 16#FF;
-	iState := 0;
+END_IF
+IF THIS^.fbMover.MCTOPLC.STD.State = MC_PLANAR_STATE.Error THEN
+	METH_Error();
+	Prop_ErrorID := 1; //Moverがエラー
+	RETURN;
+END_IF
+IF fbFB_Mover.Aborted THEN
+	METH_CommandAborted();
 	RETURN;
 END_IF
 
-CASE iState OF
-	0:
-	methStrring := 1;
-	iState := 10;
-	// Z方向に上昇
-	fbMover.MoveZ(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= 4.0, 
-		constraint:= Constraint);
+IF bSetExternalSetPoint THEN
+	ACT_SetExternalSetPoint();	
+END_IF
+CASE THIS^.uiState OF
+	0: 
+	//所定の位置に移動する
+	dutTargetPosition := dutPosition;
+	dutTargetPosition.x := dutPosition.x + lrStrringStartPos_x;
+	THIS^.fbMoveToPosition(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	10: 
-	IF fbFB_Mover.Done THEN
-		iState := 20;
+	IF THIS^.fbMoveToPosition.Done THEN
+		THIS^.fbMoveToPosition(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := State_StartZ;
+	ELSIF THIS^.fbMoveToPosition.Error THEN
+		METH_Error();
+		Prop_ErrorID := 10; //Moverがエラー
 	END_IF
 	
-	20:
-	iState := 30;
-	// スタート位置に移動
-	xycTargetPosition.SetValuesXY(x:= 190, y:= 120);
-	fbMover.MoveToPosition(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= xycTargetPosition, 
-		constraint:= Constraint, 
-		options:= 0);
+	State_StartZ:
+	//Z方向に上昇
+	dutTargetPosition.z := THIS^.lrStrringStartPos_z;
+	THIS^.fbMoveZ(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	30: 
-	IF fbFB_Mover.Done THEN
-		iState := 40;
+	IF THIS^.fbMoveZ.Done THEN
+		THIS^.fbMoveZ(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := State_StartB;
+	ELSIF THIS^.fbMoveZ.Error THEN
+		METH_Error();
+		Prop_ErrorID := 20; //Moverがエラー
 	END_IF
 	
-	40:
-	iState := 50;
-	// スタート角度に設定
-	fbMover.MoveA(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= -2.0, 
-		constraint:= Constraint);
+	State_StartB:
+	//B方向に傾ける
+	dutTargetPosition.a := THIS^.lrStrringStartPos_b;
+	THIS^.fbMoveB(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	50: 
-	IF fbFB_Mover.Done THEN
-		iState := 200;
+	IF THIS^.fbMoveB.Done THEN
+		THIS^.fbMoveB(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := State_StartExternal;
+	ELSIF THIS^.fbMoveB.Error THEN
+		METH_Error();
+		Prop_ErrorID := 40; //Moverがエラー
 	END_IF
 	
-	200:
-	// Cam設定
-	fbCamIn_X(
-		Master:= Axis_Master, 
-		Slave:= Axis_X, 
+	State_StartExternal:
+	// ExternalSetpoint開始
+	bSetExternalSetPoint := TRUE;
+	stExternalOpt.mode := MC_EXTERNAL_SET_POSITION_MODE.Relative;
+	THIS^.fbMover.StartExternalSetpointGeneration(commandFeedback:= 0, options:= stExternalOpt);
+	THIS^.uiState := State_CamIn;
+	
+	State_CamIn: 
+	//CamIn
+	THIS^.fbCamIn_S_x(
+		Master:= THIS^.fbAxis_Master, 
+		Slave:= THIS^.fbAxis_Slave_x, 
 		Execute:= TRUE, 
 		MasterOffset:= 0, 
 		SlaveOffset:= 0, 
 		MasterScaling:= 1, 
 		SlaveScaling:= 1, 
-		StartMode:= , 
-		CamTableID:= 2, 
-		BufferMode:= , 
-		Options:= );
-		
-	fbCamIn_Y(
-		Master:= Axis_Master, 
-		Slave:= Axis_Y, 
+		CamTableID:= 1);
+	
+	THIS^.fbCamIn_S_y(
+		Master:= THIS^.fbAxis_Master, 
+		Slave:= THIS^.fbAxis_Slave_y, 
 		Execute:= TRUE, 
 		MasterOffset:= 0, 
 		SlaveOffset:= 0, 
 		MasterScaling:= 1, 
 		SlaveScaling:= 1, 
-		StartMode:= , 
-		CamTableID:= 2, 
-		BufferMode:= , 
-		Options:= );
-		
-	fbCamIn_A(
-		Master:= Axis_Master, 
-		Slave:= Axis_A, 
+		CamTableID:= 2);
+	
+	THIS^.fbCamIn_S_a(
+		Master:= THIS^.fbAxis_Master, 
+		Slave:= THIS^.fbAxis_Slave_a, 
 		Execute:= TRUE, 
 		MasterOffset:= 0, 
 		SlaveOffset:= 0, 
 		MasterScaling:= 1, 
 		SlaveScaling:= 1, 
-		StartMode:= , 
-		CamTableID:= 2, 
-		BufferMode:= , 
-		Options:= );
-		
-	fbCamIn_B(
-		Master:= Axis_Master, 
-		Slave:= Axis_B, 
+		CamTableID:= 3);
+	
+	THIS^.fbCamIn_S_b(
+		Master:= THIS^.fbAxis_Master, 
+		Slave:= THIS^.fbAxis_Slave_b, 
 		Execute:= TRUE, 
 		MasterOffset:= 0, 
 		SlaveOffset:= 0, 
 		MasterScaling:= 1, 
 		SlaveScaling:= 1, 
-		StartMode:= , 
-		CamTableID:= 2, 
-		BufferMode:= , 
-		Options:= );
+		CamTableID:= 4);
 		
-	IF fbCamIn_X.InSync AND fbCamIn_Y.InSync AND fbCamIn_A.InSync AND fbCamIn_B.InSync  THEN
-		iState := 220;
-		fbCamIn_X(Master:= Axis_Master, Slave:= Axis_X, Execute:= FALSE);
-		fbCamIn_Y(Master:= Axis_Master, Slave:= Axis_Y, Execute:= FALSE);
-		fbCamIn_A(Master:= Axis_Master, Slave:= Axis_A, Execute:= FALSE);
-		fbCamIn_B(Master:= Axis_Master, Slave:= Axis_B, Execute:= FALSE);
+	IF fbCamIn_S_x.InSync AND fbCamIn_S_y.InSync AND fbCamIn_S_a.InSync AND fbCamIn_S_b.InSync  THEN
+		THIS^.uiState := State_StrringPlus;
+		fbCamIn_S_x(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_x, Execute:= FALSE);
+		fbCamIn_S_y(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_y, Execute:= FALSE);
+		fbCamIn_S_a(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_a, Execute:= FALSE);
+		fbCamIn_S_b(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_b, Execute:= FALSE);
 	END_IF
-		
-	220: 
-	//右まわりに拡販
-	fbAbsolute(
-		Axis:= Axis_Master, 
+	
+	State_StrringPlus: 
+	//+撹拌
+	THIS^.fbAbsolute_M(
+		Axis:= THIS^.fbAxis_Master, 
 		Execute:= TRUE, 
 		Position:= 360, 
-		Velocity:= 180, 
-		Acceleration:= 1000, 
-		Deceleration:= 1000, 
-		Jerk:= 10000, 
-		BufferMode:= , 
-		Options:= );
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	IF fbAbsolute.Done THEN
-		iState := 240;
-		fbAbsolute(Axis:= Axis_Master, Execute:= FALSE);	
+	IF THIS^.fbAbsolute_M.Done THEN
+		THIS^.uiState := State_StrringMinus;
+		THIS^.fbAbsolute_M(Axis:= THIS^.fbAxis_Master, Execute:= FALSE); 
 	END_IF
 	
-	240: 
-	//左まわりに拡販
-	fbAbsolute(
-		Axis:= Axis_Master, 
+	State_StrringMinus: 
+	//-撹拌
+	THIS^.fbAbsolute_M(
+		Axis:= THIS^.fbAxis_Master, 
 		Execute:= TRUE, 
 		Position:= 0, 
-		Velocity:= 180, 
-		Acceleration:= 1000, 
-		Deceleration:= 1000, 
-		Jerk:= 10000, 
-		BufferMode:= , 
-		Options:= );
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	IF fbAbsolute.Done THEN
-		iState := 260;
-		fbAbsolute(Axis:= Axis_Master, Execute:= FALSE);	
+	IF THIS^.fbAbsolute_M.Done THEN
+		THIS^.uiState := State_EndExternal;
+		THIS^.fbAbsolute_M(Axis:= THIS^.fbAxis_Master, Execute:= FALSE); 
 	END_IF
 	
-	260:
-	//Camを解除する
-	fbCamOut_X(
-		Slave:= Axis_X, 
+	State_EndExternal:
+	// ExternalSetpoint終了
+	bSetExternalSetPoint := FALSE;
+	THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);
+	THIS^.uiState := State_CamOut;
+	
+	State_CamOut:
+	//CamOut
+	THIS^.fbCamOut_S_x(
+		Slave:= THIS^.fbAxis_Slave_x, 
+		Execute:= TRUE);
+		
+	THIS^.fbCamOut_S_y(
+		Slave:= THIS^.fbAxis_Slave_y, 
+		Execute:= TRUE);
+		
+	THIS^.fbCamOut_S_a(
+		Slave:= THIS^.fbAxis_Slave_a, 
+		Execute:= TRUE);
+		
+	THIS^.fbCamOut_S_b(
+		Slave:= THIS^.fbAxis_Slave_b, 
+		Execute:= TRUE);
+		
+	IF THIS^.fbCamOut_S_x.Done AND THIS^.fbCamOut_S_y.Done AND THIS^.fbCamOut_S_a.Done AND THIS^.fbCamOut_S_b.Done THEN
+		THIS^.uiState := State_EndPosition;
+		THIS^.fbCamOut_S_x(Slave:= THIS^.fbAxis_Slave_x, Execute:= FALSE);
+		THIS^.fbCamOut_S_y(Slave:= THIS^.fbAxis_Slave_y, Execute:= FALSE);
+		THIS^.fbCamOut_S_a(Slave:= THIS^.fbAxis_Slave_a, Execute:= FALSE);
+		THIS^.fbCamOut_S_b(Slave:= THIS^.fbAxis_Slave_b, Execute:= FALSE);
+	END_IF
+	
+	State_EndPosition:
+	//所定の位置に移動する
+	dutTargetPosition := dutPosition;
+	THIS^.fbMoveToPosition(
+		fbMover:= THIS^.fbMover, 
 		Execute:= TRUE, 
-		Options:= );
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	fbCamOut_Y(
-		Slave:= Axis_Y, 
+	IF THIS^.fbMoveToPosition.Done THEN
+		THIS^.fbMoveToPosition(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := State_EndB;
+	ELSIF THIS^.fbMoveToPosition.Error THEN
+		METH_Error();
+		Prop_ErrorID := 220; //Moverがエラー
+	END_IF
+	
+	State_EndB:
+	//B方向を戻す
+	dutTargetPosition.b := THIS^.lrStrringEndPos_b;
+	THIS^.fbMoveB(
+		fbMover:= THIS^.fbMover, 
 		Execute:= TRUE, 
-		Options:= );
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	fbCamOut_A(
-		Slave:= Axis_A, 
+	IF THIS^.fbMoveB.Done THEN
+		THIS^.fbMoveB(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := State_EndZ;
+	ELSIF THIS^.fbMoveB.Error THEN
+		METH_Error();
+		Prop_ErrorID := 240; //Moverがエラー
+	END_IF
+	
+	State_EndZ:
+	//Z方向に上昇
+	dutTargetPosition.z := THIS^.lrStrringEndPos_z;
+	THIS^.fbMoveZ(
+		fbMover:= THIS^.fbMover, 
 		Execute:= TRUE, 
-		Options:= );
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
 		
-	fbCamOut_B(
-		Slave:= Axis_B, 
-		Execute:= TRUE, 
-		Options:= );
-		
-	IF fbCamOut_X.Done AND fbCamOut_Y.Done AND fbCamOut_A.Done AND fbCamOut_B.Done THEN
-		iState := 400;
-		fbCamOut_X(Slave:= Axis_X, Execute:= FALSE); 
-		fbCamOut_Y(Slave:= Axis_Y, Execute:= FALSE); 
-		fbCamOut_A(Slave:= Axis_A, Execute:= FALSE); 
-		fbCamOut_B(Slave:= Axis_B, Execute:= FALSE); 
+	IF THIS^.fbMoveZ.Done THEN
+		THIS^.fbMoveZ(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := 16#FFFF;
+	ELSIF THIS^.fbMoveZ.Error THEN
+		METH_Error();
+		Prop_ErrorID := 240; //Moverがエラー
 	END_IF
 	
-	400:
-	iState := 410;
-	// A軸 0度に設定
-	fbMover.MoveA(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= 0, 
-		constraint:= Constraint);
-		
-	410: 
-	IF fbFB_Mover.Done THEN
-		iState := 420;
-	END_IF
 	
-	420:
-	iState := 430;
-	// スタート位置に移動
-	xycTargetPosition.SetValuesXY(x:= 240, y:= 120);
-	fbMover.MoveToPosition(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= xycTargetPosition, 
-		constraint:= Constraint, 
-		options:= 0);
-		
-	430: 
-	IF fbFB_Mover.Done THEN
-		iState := 440;
-	END_IF
+	16#FFFF:
+	METH_Done();
 	
-	440:
-	iState := 450;
-	// Z方向に上昇
-	fbMover.MoveZ(
-		commandFeedback:= fbFB_Mover, 
-		targetPosition:= 2.0, 
-		constraint:= Constraint);
-		
-	450: 
-	IF fbFB_Mover.Done THEN
-		iState := 1000;
-	END_IF
-	
-	1000: 
-		methStrring := 0;
-		iState := 0;
 END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{19f75a97-805f-4848-932c-fd34a59e269b}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
@@ -296,7 +411,7 @@ lrJerk := Jerk;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{5b3c2789-9e47-47e7-b8cb-a62a9a7d756b}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
@@ -308,15 +423,18 @@ Prop_ErrorID := 0;
 
 // 内部変数をリフレッシュする
 uiState := 0;
-xycPosition.SetValuesXYC(0,0,0);
 lrVelocity := 0;
 lrAcceleration := 0;
 lrDeceleration := 0;
-lrJerk := 0;]]></ST>
+lrJerk := 0;
+bSetExternalSetPoint :=FALSE;
+
+//External Set Point 終了
+THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{5f46011f-6cea-45dd-857f-6fa44821b5cc}">
-      <Declaration><![CDATA[{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
@@ -357,17 +475,130 @@ END_IF]]></ST>
       <LineId Id="41" Count="8" />
       <LineId Id="9" Count="0" />
     </LineIds>
+    <LineIds Name="FB_Strring.ACT_SetExternalSetPoint">
+      <LineId Id="27" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="44" Count="3" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="48" Count="4" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="53" Count="4" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="58" Count="4" />
+    </LineIds>
     <LineIds Name="FB_Strring.METH_Busy">
-      <LineId Id="5" Count="227" />
-      <LineId Id="4" Count="0" />
+      <LineId Id="235" Count="12" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="515" Count="0" />
+      <LineId Id="514" Count="0" />
+      <LineId Id="516" Count="1" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="578" Count="0" />
+      <LineId Id="587" Count="0" />
+      <LineId Id="602" Count="0" />
+      <LineId Id="580" Count="0" />
+      <LineId Id="588" Count="5" />
+      <LineId Id="579" Count="0" />
+      <LineId Id="594" Count="0" />
+      <LineId Id="596" Count="5" />
+      <LineId Id="595" Count="0" />
+      <LineId Id="577" Count="0" />
+      <LineId Id="292" Count="0" />
+      <LineId Id="297" Count="0" />
+      <LineId Id="567" Count="0" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="306" Count="5" />
+      <LineId Id="298" Count="0" />
+      <LineId Id="312" Count="0" />
+      <LineId Id="314" Count="5" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="322" Count="1" />
+      <LineId Id="568" Count="0" />
+      <LineId Id="324" Count="14" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="518" Count="3" />
+      <LineId Id="524" Count="0" />
+      <LineId Id="523" Count="0" />
+      <LineId Id="522" Count="0" />
+      <LineId Id="339" Count="1" />
+      <LineId Id="451" Count="0" />
+      <LineId Id="342" Count="7" />
+      <LineId Id="341" Count="0" />
+      <LineId Id="350" Count="0" />
+      <LineId Id="352" Count="8" />
+      <LineId Id="351" Count="0" />
+      <LineId Id="362" Count="8" />
+      <LineId Id="361" Count="0" />
+      <LineId Id="372" Count="9" />
+      <LineId Id="383" Count="5" />
+      <LineId Id="382" Count="0" />
+      <LineId Id="390" Count="1" />
+      <LineId Id="450" Count="0" />
+      <LineId Id="392" Count="3" />
+      <LineId Id="399" Count="2" />
+      <LineId Id="371" Count="0" />
+      <LineId Id="402" Count="1" />
+      <LineId Id="407" Count="0" />
+      <LineId Id="406" Count="0" />
+      <LineId Id="405" Count="0" />
+      <LineId Id="250" Count="0" />
+      <LineId Id="410" Count="0" />
+      <LineId Id="449" Count="0" />
+      <LineId Id="411" Count="11" />
+      <LineId Id="408" Count="0" />
+      <LineId Id="423" Count="0" />
+      <LineId Id="525" Count="0" />
+      <LineId Id="528" Count="1" />
+      <LineId Id="532" Count="0" />
+      <LineId Id="526" Count="1" />
+      <LineId Id="424" Count="1" />
+      <LineId Id="427" Count="3" />
+      <LineId Id="432" Count="1" />
+      <LineId Id="431" Count="0" />
+      <LineId Id="434" Count="0" />
+      <LineId Id="436" Count="1" />
+      <LineId Id="435" Count="0" />
+      <LineId Id="438" Count="0" />
+      <LineId Id="440" Count="1" />
+      <LineId Id="439" Count="0" />
+      <LineId Id="442" Count="1" />
+      <LineId Id="445" Count="0" />
+      <LineId Id="491" Count="0" />
+      <LineId Id="446" Count="2" />
+      <LineId Id="444" Count="0" />
+      <LineId Id="510" Count="0" />
+      <LineId Id="623" Count="0" />
+      <LineId Id="605" Count="1" />
+      <LineId Id="608" Count="14" />
+      <LineId Id="603" Count="1" />
+      <LineId Id="492" Count="1" />
+      <LineId Id="569" Count="0" />
+      <LineId Id="494" Count="14" />
+      <LineId Id="453" Count="0" />
+      <LineId Id="509" Count="0" />
+      <LineId Id="455" Count="1" />
+      <LineId Id="570" Count="0" />
+      <LineId Id="457" Count="15" />
+      <LineId Id="535" Count="0" />
+      <LineId Id="473" Count="0" />
+      <LineId Id="511" Count="1" />
+      <LineId Id="454" Count="0" />
+      <LineId Id="249" Count="0" />
     </LineIds>
     <LineIds Name="FB_Strring.METH_Enter">
       <LineId Id="5" Count="4" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_Strring.METH_Exit">
-      <LineId Id="5" Count="11" />
+      <LineId Id="5" Count="7" />
+      <LineId Id="14" Count="2" />
       <LineId Id="4" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
     </LineIds>
     <LineIds Name="FB_Strring.METH_Main">
       <LineId Id="5" Count="29" />

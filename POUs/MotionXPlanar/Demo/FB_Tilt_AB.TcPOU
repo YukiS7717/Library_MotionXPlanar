@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="FB_Tilt_AB" Id="{e2447b9a-4dbb-4a10-aa3c-becd1202ca4a}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Tilt_AB EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Tilt_AB EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 END_VAR
