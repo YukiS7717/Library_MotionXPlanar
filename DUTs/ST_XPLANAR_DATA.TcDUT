@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <DUT Name="ST_XPLANAR_DATA" Id="{e2b8c116-5160-4311-ad1a-9d07a1c76a10}">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="ST_XPLANAR_DATA" Id="{02533917-bd3d-4151-8e78-83deae67e4b2}">
     <Declaration><![CDATA[TYPE ST_XPLANAR_DATA :
 STRUCT
 	uliTimeStamp					: ULINT; // タイムスタンプ
@@ -30,7 +30,7 @@ STRUCT
 	lrSetVelocity_c					: LREAL; // 指令速度 C
 	uiState							: UINT; // Moverの状態
 	bState_Error					: BOOL; // Moverにエラーが発生したか
-	uiMoverErrorID					: UINT; // Moverのエラー番号
+	diMoverErrorID					: DINT; // Moverのエラー番号
 	uiDemoState						: UINT; // デモのシーケンス番号
 END_STRUCT
 END_TYPE

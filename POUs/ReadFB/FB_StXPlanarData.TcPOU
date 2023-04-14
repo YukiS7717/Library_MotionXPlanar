@@ -1,13 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="FB_StXPlanarData" Id="{e003ed92-715c-4594-ac45-4de666637235}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_StXPlanarData" Id="{8f6135fb-ab2b-4bd2-9151-1474f1cbaa9f}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_StXPlanarData IMPLEMENTS ITF_StXPlanarData
-VAR_INPUT
-	fbMover								: REFERENCE TO MC_PlanarMover;
-END_VAR
-VAR_OUTPUT
-	ST_XPLANAR_DATA						: ST_XPLANAR_DATA;
-END_VAR
 VAR
 	ActPosition							: MoverVector;
 	ActVelocity							: MoverVector;
@@ -16,375 +10,476 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
-ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
-SetPosition := fbMover.MCTOPLC.SET.SetPos;
-SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
-
-//General
-ST_XPLANAR_DATA.uiState := THIS^.GetState;
-ST_XPLANAR_DATA.bState_Error := THIS^.GetStateError;
-ST_XPLANAR_DATA.uiMoverErrorID := THIS^.GetErrorID;
-ST_XPLANAR_DATA.uliTimeStamp := THIS^.GetTimeStamp;
-ST_XPLANAR_DATA.uiDemoState := THIS^.GetDemoState;
-
-// ActPosition
-ST_XPLANAR_DATA.lrActPosition_x := THIS^.GetActPosition_x;
-ST_XPLANAR_DATA.lrActPosition_y := THIS^.GetActPosition_y;
-ST_XPLANAR_DATA.lrActPosition_z := THIS^.GetActPosition_z;
-ST_XPLANAR_DATA.lrActPosition_a := THIS^.GetActPosition_a;
-ST_XPLANAR_DATA.lrActPosition_b := THIS^.GetActPosition_b;
-ST_XPLANAR_DATA.lrActPosition_c := THIS^.GetActPosition_c;
-// SetPosition
-ST_XPLANAR_DATA.lrSetPosition_x := THIS^.GetSetPosition_x;
-ST_XPLANAR_DATA.lrSetPosition_y := THIS^.GetSetPosition_y;
-ST_XPLANAR_DATA.lrSetPosition_z := THIS^.GetSetPosition_z;
-ST_XPLANAR_DATA.lrSetPosition_a := THIS^.GetSetPosition_a;
-ST_XPLANAR_DATA.lrSetPosition_b := THIS^.GetSetPosition_b;
-ST_XPLANAR_DATA.lrSetPosition_c := THIS^.GetSetPosition_c;
-// ActVelocity
-ST_XPLANAR_DATA.lrActVelocity_x := THIS^.GetActVelocity_x;
-ST_XPLANAR_DATA.lrActVelocity_y := THIS^.GetActVelocity_y;
-ST_XPLANAR_DATA.lrActVelocity_z := THIS^.GetActVelocity_z;
-ST_XPLANAR_DATA.lrActVelocity_a := THIS^.GetActVelocity_a;
-ST_XPLANAR_DATA.lrActVelocity_b := THIS^.GetActVelocity_b;
-ST_XPLANAR_DATA.lrActVelocity_c := THIS^.GetActVelocity_c;
-// SetVelocity
-ST_XPLANAR_DATA.lrSetVelocity_x := THIS^.GetSetVelocity_x;
-ST_XPLANAR_DATA.lrSetVelocity_y := THIS^.GetSetVelocity_y;
-ST_XPLANAR_DATA.lrSetVelocity_z := THIS^.GetSetVelocity_z;
-ST_XPLANAR_DATA.lrSetVelocity_a := THIS^.GetSetVelocity_a;
-ST_XPLANAR_DATA.lrSetVelocity_b := THIS^.GetSetVelocity_b;
-ST_XPLANAR_DATA.lrSetVelocity_c := THIS^.GetSetVelocity_c;]]></ST>
+      <ST><![CDATA[
+]]></ST>
     </Implementation>
-    <Folder Name="ActPosition" Id="{eea02ac7-7096-4ce3-a72a-6877ed6e563c}" />
-    <Folder Name="ActVelocity" Id="{f4a11e78-bd1f-40ad-9067-2a28fb52fe5a}" />
-    <Folder Name="General" Id="{476f7462-91e6-448a-ab5c-2c0a7b46a39b}" />
-    <Folder Name="SetPosition" Id="{164555b5-f2a4-4feb-b096-d2312bb7395b}" />
-    <Folder Name="SetVelocity" Id="{9d0436d7-118c-4db9-9606-27dae6bd2400}" />
-    <Method Name="GetActPosition_a" Id="{9a778402-58b4-4955-bb88-2ffe698e137a}" FolderPath="ActPosition\">
+    <Folder Name="ActPosition" Id="{bca057a1-0d91-4956-9205-ac215b4859eb}" />
+    <Folder Name="ActVelocity" Id="{6b4291b7-a9d3-416c-8b7b-51a9bece6d50}" />
+    <Folder Name="General" Id="{18450528-7fdc-49ad-bac4-c21ac77718b6}" />
+    <Folder Name="SetPosition" Id="{56eb487d-6221-4542-b23b-51c3b9985566}" />
+    <Folder Name="SetVelocity" Id="{8284105f-dcfc-4642-b067-a593cb5d8c31}" />
+    <Method Name="GetActPosition_a" Id="{bc5f3b9e-ff6b-45fb-85cc-36a2d64baf6e}" FolderPath="ActPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActPosition_a : LREAL
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActPosition_a := ActPosition.a;]]></ST>
+        <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
+GetActPosition_a := THIS^.ActPosition.a;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActPosition_b" Id="{c774a813-43e6-4053-88f8-582dc006ec0b}" FolderPath="ActPosition\">
+    <Method Name="GetActPosition_b" Id="{bdef8e17-9b3c-4b11-acca-b267e56dad1d}" FolderPath="ActPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActPosition_b : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActPosition_b := ActPosition.b;]]></ST>
+        <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
+GetActPosition_b := THIS^.ActPosition.b;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActPosition_c" Id="{74a03d50-96bb-43da-bb8f-aecb208cd273}" FolderPath="ActPosition\">
+    <Method Name="GetActPosition_c" Id="{edb3cb60-13a8-4b77-b661-adb8b86a46cf}" FolderPath="ActPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActPosition_c : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActPosition_c := ActPosition.c;]]></ST>
+        <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
+GetActPosition_c := THIS^.ActPosition.c;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActPosition_x" Id="{24b82646-1eff-413d-8ef0-06e8b110c47a}" FolderPath="ActPosition\">
+    <Method Name="GetActPosition_x" Id="{1ff23b89-7f35-4b44-b178-009fd28281b1}" FolderPath="ActPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActPosition_x : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActPosition_x := ActPosition.x;]]></ST>
+        <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
+GetActPosition_x := THIS^.ActPosition.x;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActPosition_y" Id="{498a8a25-79ac-4310-9cdf-74ac93d4a9d9}" FolderPath="ActPosition\">
+    <Method Name="GetActPosition_y" Id="{d28791bd-585a-45ab-a01e-6b335156df16}" FolderPath="ActPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActPosition_y : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActPosition_y := ActPosition.y;]]></ST>
+        <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
+GetActPosition_y := THIS^.ActPosition.y;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActPosition_z" Id="{29e79948-2467-4fc6-a18a-4546e26d2b88}" FolderPath="ActPosition\">
+    <Method Name="GetActPosition_z" Id="{1c5c7732-bfa2-4751-8365-97c438ebaa83}" FolderPath="ActPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActPosition_z : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActPosition_z := ActPosition.z;]]></ST>
+        <ST><![CDATA[ActPosition := fbMover.MCTOPLC.ACT.ActPos;
+GetActPosition_z := THIS^.ActPosition.z;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActVelocity_a" Id="{d8e46300-3496-4713-bcdb-61361e230700}" FolderPath="ActVelocity\">
+    <Method Name="GetActVelocity_a" Id="{22251908-7eb0-40e2-a327-659e3804206c}" FolderPath="ActVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActVelocity_a : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActVelocity_a := ActVelocity.a;]]></ST>
+        <ST><![CDATA[ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
+GetActVelocity_a := THIS^.ActVelocity.a;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActVelocity_b" Id="{b613af1c-1956-4214-9e85-ec1bf500203d}" FolderPath="ActVelocity\">
+    <Method Name="GetActVelocity_b" Id="{431c5bc9-8043-43da-9411-b886abdb627d}" FolderPath="ActVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActVelocity_b : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActVelocity_b := ActVelocity.b;]]></ST>
+        <ST><![CDATA[ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
+GetActVelocity_b := THIS^.ActVelocity.b;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActVelocity_c" Id="{0cd1627f-3764-417f-90b7-df87be4408cc}" FolderPath="ActVelocity\">
+    <Method Name="GetActVelocity_c" Id="{628777d8-9acc-4344-a838-618aab86fa68}" FolderPath="ActVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActVelocity_c : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActVelocity_c := ActVelocity.c;]]></ST>
+        <ST><![CDATA[ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
+GetActVelocity_c := THIS^.ActVelocity.c;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActVelocity_x" Id="{9650db03-e53b-4f10-859b-6c7ee8c40b90}" FolderPath="ActVelocity\">
+    <Method Name="GetActVelocity_x" Id="{fe873b09-452b-4e2b-abed-5318b9fb9407}" FolderPath="ActVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActVelocity_x : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActVelocity_x := ActVelocity.x;]]></ST>
+        <ST><![CDATA[ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
+GetActVelocity_x := THIS^.ActVelocity.x;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActVelocity_y" Id="{2dedd5c1-e486-413a-bd49-08a583fed0ac}" FolderPath="ActVelocity\">
+    <Method Name="GetActVelocity_y" Id="{7e83f7e5-5407-40b9-98be-e5f16a9f16ef}" FolderPath="ActVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActVelocity_y : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActVelocity_y := ActVelocity.y;]]></ST>
+        <ST><![CDATA[ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
+GetActVelocity_y := THIS^.ActVelocity.y;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetActVelocity_z" Id="{e9096169-6f32-40bb-bc43-fb8410b419ed}" FolderPath="ActVelocity\">
+    <Method Name="GetActVelocity_z" Id="{470ef8bf-b2ca-4617-845e-e79b6dc85c68}" FolderPath="ActVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetActVelocity_z : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[GetActVelocity_z := ActVelocity.z;]]></ST>
+        <ST><![CDATA[ActVelocity := fbMover.MCTOPLC.ACT.ActVelo;
+GetActVelocity_z := THIS^.ActVelocity.z;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetDemoState" Id="{251c8cfe-1315-4be2-a2fb-71a394881ab0}" FolderPath="General\">
+    <Method Name="GetAllData" Id="{082b882d-03e9-49cd-9363-11250948bf8b}">
+      <Declaration><![CDATA[METHOD GetAllData : ST_XPLANAR_DATA
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//General
+GetAllData.uiState := THIS^.GetState(fbMover);
+GetAllData.bState_Error := THIS^.GetStateError(fbMover);
+GetAllData.diMoverErrorID := THIS^.GetErrorID(fbMover);
+GetAllData.uliTimeStamp := THIS^.GetTimeStamp(fbMover);
+
+// ActPosition
+GetAllData.lrActPosition_x := THIS^.GetActPosition_x(fbMover);
+GetAllData.lrActPosition_y := THIS^.GetActPosition_y(fbMover);
+GetAllData.lrActPosition_z := THIS^.GetActPosition_z(fbMover);
+GetAllData.lrActPosition_a := THIS^.GetActPosition_a(fbMover);
+GetAllData.lrActPosition_b := THIS^.GetActPosition_b(fbMover);
+GetAllData.lrActPosition_c := THIS^.GetActPosition_c(fbMover);
+// SetPosition
+GetAllData.lrSetPosition_x := THIS^.GetSetPosition_x(fbMover);
+GetAllData.lrSetPosition_y := THIS^.GetSetPosition_y(fbMover);
+GetAllData.lrSetPosition_z := THIS^.GetSetPosition_z(fbMover);
+GetAllData.lrSetPosition_a := THIS^.GetSetPosition_a(fbMover);
+GetAllData.lrSetPosition_b := THIS^.GetSetPosition_b(fbMover);
+GetAllData.lrSetPosition_c := THIS^.GetSetPosition_c(fbMover);
+// ActVelocity
+GetAllData.lrActVelocity_x := THIS^.GetActVelocity_x(fbMover);
+GetAllData.lrActVelocity_y := THIS^.GetActVelocity_y(fbMover);
+GetAllData.lrActVelocity_z := THIS^.GetActVelocity_z(fbMover);
+GetAllData.lrActVelocity_a := THIS^.GetActVelocity_a(fbMover);
+GetAllData.lrActVelocity_b := THIS^.GetActVelocity_b(fbMover);
+GetAllData.lrActVelocity_c := THIS^.GetActVelocity_c(fbMover);
+// SetVelocity
+GetAllData.lrSetVelocity_x := THIS^.GetSetVelocity_x(fbMover);
+GetAllData.lrSetVelocity_y := THIS^.GetSetVelocity_y(fbMover);
+GetAllData.lrSetVelocity_z := THIS^.GetSetVelocity_z(fbMover);
+GetAllData.lrSetVelocity_a := THIS^.GetSetVelocity_a(fbMover);
+GetAllData.lrSetVelocity_b := THIS^.GetSetVelocity_b(fbMover);
+GetAllData.lrSetVelocity_c := THIS^.GetSetVelocity_c(fbMover);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetErrorID" Id="{39f0f565-0686-41e9-829a-c264a8b32544}" FolderPath="General\">
       <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD GetDemoState : UINT
-]]></Declaration>
+METHOD GetErrorID : DINT
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[GetErrorID := fbMover.MCTOPLC.STD.ErrorCode;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetErrorID" Id="{c35b675d-ed6d-4f10-982e-9c6e08f51dce}" FolderPath="General\">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD GetErrorID : UINT
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="GetSetPosition_a" Id="{4ee85e73-9f2e-4768-a440-d5853c7f8e91}" FolderPath="SetPosition\">
+    <Method Name="GetSetPosition_a" Id="{658e0997-a0e9-42ae-be82-9855ffbc1d96}" FolderPath="SetPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetPosition_a : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetPosition := fbMover.MCTOPLC.SET.SetPos;
+GetSetPosition_a := THIS^.SetPosition.a;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetPosition_b" Id="{cf4c213a-ce80-4202-8353-6286d758f551}" FolderPath="SetPosition\">
+    <Method Name="GetSetPosition_b" Id="{b98742db-aff7-4a57-86a0-a7d726ef7c36}" FolderPath="SetPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetPosition_b : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetPosition := fbMover.MCTOPLC.SET.SetPos;
+GetSetPosition_b := THIS^.SetPosition.b;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetPosition_c" Id="{8bfc7cfc-6c36-4665-a18a-63aa90bfabed}" FolderPath="SetPosition\">
+    <Method Name="GetSetPosition_c" Id="{ed5f3ebe-7a2e-4abe-a9bb-5d87fceee8c8}" FolderPath="SetPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetPosition_c : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetPosition := fbMover.MCTOPLC.SET.SetPos;
+GetSetPosition_c := THIS^.SetPosition.c;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetPosition_x" Id="{17cca9dd-db20-47ca-a178-90add1dc4083}" FolderPath="SetPosition\">
+    <Method Name="GetSetPosition_x" Id="{0d341f43-f4cd-4050-bfbf-11e05f49e8ce}" FolderPath="SetPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetPosition_x : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetPosition := fbMover.MCTOPLC.SET.SetPos;
+GetSetPosition_x := THIS^.SetPosition.x;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetPosition_y" Id="{ed3e25b5-afd3-4df7-a69d-e900b96edd6f}" FolderPath="SetPosition\">
+    <Method Name="GetSetPosition_y" Id="{fa28018d-bdaa-4ae7-9b37-f1de3c4b67fb}" FolderPath="SetPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetPosition_y : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetPosition := fbMover.MCTOPLC.SET.SetPos;
+GetSetPosition_y := THIS^.SetPosition.y;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetPosition_z" Id="{d970f4a7-0367-4cbb-b307-ae36e44350ce}" FolderPath="SetPosition\">
+    <Method Name="GetSetPosition_z" Id="{fde20b6c-f749-4cba-b9fe-d8a70214d8df}" FolderPath="SetPosition\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetPosition_z : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetPosition := fbMover.MCTOPLC.SET.SetPos;
+GetSetPosition_z := THIS^.SetPosition.z;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetVelocity_a" Id="{f7a85b30-5a8c-46c8-83ea-47b360fe48ea}" FolderPath="SetVelocity\">
+    <Method Name="GetSetVelocity_a" Id="{19094deb-8800-4a02-b3a2-1c66890da45f}" FolderPath="SetVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetVelocity_a : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
+GetSetVelocity_a := THIS^.SetVelocity.a;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetVelocity_b" Id="{1b578392-5607-4be2-953f-9b6c48c797ee}" FolderPath="SetVelocity\">
+    <Method Name="GetSetVelocity_b" Id="{3704adf8-ce0a-4d95-aed1-c3a1ebcd5579}" FolderPath="SetVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetVelocity_b : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
+GetSetVelocity_b := THIS^.SetVelocity.b;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetVelocity_c" Id="{8734e2cc-eeeb-4401-817d-a50a52b03733}" FolderPath="SetVelocity\">
+    <Method Name="GetSetVelocity_c" Id="{a20a1465-2f37-4ef8-bff2-d36dc328fceb}" FolderPath="SetVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetVelocity_c : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
+GetSetVelocity_c := THIS^.SetVelocity.c;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetVelocity_x" Id="{489f13f5-ff62-499a-a612-db4e01a7b4f8}" FolderPath="SetVelocity\">
+    <Method Name="GetSetVelocity_x" Id="{fb84e620-de88-45b9-9bb4-04a4710d18b4}" FolderPath="SetVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetVelocity_x : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
+GetSetVelocity_x := THIS^.SetVelocity.x;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetVelocity_y" Id="{ab2c021b-86ea-4217-b89f-9673337b45b5}" FolderPath="SetVelocity\">
+    <Method Name="GetSetVelocity_y" Id="{f6db412b-da6b-4e0d-807d-213768a1472e}" FolderPath="SetVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetVelocity_y : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
+GetSetVelocity_y := THIS^.SetVelocity.y;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetSetVelocity_z" Id="{8db3b38f-69bc-4ebe-a003-9f27e34c1cdf}" FolderPath="SetVelocity\">
+    <Method Name="GetSetVelocity_z" Id="{8e1b92c7-f962-41ec-b5c6-2133de0aad38}" FolderPath="SetVelocity\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetSetVelocity_z : LREAL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[SetVelocity := fbMover.MCTOPLC.SET.SetVelo;
+GetSetVelocity_z := THIS^.SetVelocity.z;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetState" Id="{4fd6b760-ba87-42e8-9784-da983bc25b59}" FolderPath="General\">
+    <Method Name="GetState" Id="{f82a5e30-2e9d-4332-8898-9d8416d04618}" FolderPath="General\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetState : UINT
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[GetState := fbMover.MCTOPLC.STD.State;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetStateError" Id="{d9a1e248-b7d3-4769-a43b-18fbc07f617c}" FolderPath="General\">
+    <Method Name="GetStateError" Id="{514a1aa2-9d35-4189-a097-d9e6252ec95a}" FolderPath="General\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetStateError : BOOL
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR
+VAR
+	TmpState					: UINT;
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[TmpState := fbMover.MCTOPLC.STD.State;
+
+IF TmpState = MC_PLANAR_STATE.Error THEN
+	GetStateError := TRUE;
+ELSE
+	GetStateError := FALSE;
+END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="GetTimeStamp" Id="{d1244442-9456-477a-8000-398db107258c}" FolderPath="General\">
+    <Method Name="GetTimeStamp" Id="{a8656f90-a807-4d84-a3bc-fa6b4d0db178}" FolderPath="General\">
       <Declaration><![CDATA[{warning 'add method implementation '}
 METHOD GetTimeStamp : ULINT
-]]></Declaration>
+VAR_IN_OUT
+	fbMover						: MC_PlanarMover;	
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[GetTimeStamp := fbMover.MCTOPLC.ACT.DcTimeStamp;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_StXPlanarData">
-      <LineId Id="50" Count="0" />
-      <LineId Id="56" Count="2" />
-      <LineId Id="51" Count="0" />
-      <LineId Id="43" Count="0" />
-      <LineId Id="45" Count="4" />
-      <LineId Id="44" Count="0" />
-      <LineId Id="27" Count="0" />
-      <LineId Id="9" Count="0" />
-      <LineId Id="15" Count="4" />
-      <LineId Id="21" Count="5" />
-      <LineId Id="20" Count="0" />
-      <LineId Id="30" Count="12" />
-      <LineId Id="28" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="76" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActPosition_a">
+      <LineId Id="10" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActPosition_b">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActPosition_c">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActPosition_x">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActPosition_y">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActPosition_z">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActVelocity_a">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActVelocity_b">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActVelocity_c">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActVelocity_x">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActVelocity_y">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetActVelocity_z">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
-    <LineIds Name="FB_StXPlanarData.GetDemoState">
-      <LineId Id="4" Count="0" />
+    <LineIds Name="FB_StXPlanarData.GetAllData">
+      <LineId Id="6" Count="32" />
+      <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetErrorID">
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetPosition_a">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetPosition_b">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetPosition_c">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetPosition_x">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetPosition_y">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetPosition_z">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetVelocity_a">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetVelocity_b">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetVelocity_c">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetVelocity_x">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetVelocity_y">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetSetVelocity_z">
+      <LineId Id="9" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetState">
@@ -392,6 +487,11 @@ METHOD GetTimeStamp : ULINT
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetStateError">
       <LineId Id="4" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="13" Count="0" />
     </LineIds>
     <LineIds Name="FB_StXPlanarData.GetTimeStamp">
       <LineId Id="4" Count="0" />

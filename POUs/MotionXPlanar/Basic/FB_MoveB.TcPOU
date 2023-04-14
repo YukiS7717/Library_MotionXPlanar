@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="FB_MoveB" Id="{056ccfa0-1b69-4fa1-8e02-1a05b50942a5}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_MoveB" Id="{8425ca0d-2577-471e-a0ef-1098251f657b}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_MoveB EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
@@ -46,7 +46,7 @@ CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
-    <Method Name="METH_Busy" Id="{cfc319b1-2d2d-4538-8f17-77385d880f57}">
+    <Method Name="METH_Busy" Id="{79f51cc3-e95a-4bad-b4da-50ca607e8601}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Busy : BOOL
 ]]></Declaration>
@@ -86,7 +86,7 @@ CASE THIS^.uiState OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Enter" Id="{9f31050b-7317-459e-b843-69b812138c7f}">
+    <Method Name="METH_Enter" Id="{5f9a41b4-098b-488f-85ba-b8a5895db5db}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
@@ -100,7 +100,7 @@ lrJerk := Jerk;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Exit" Id="{6cffb0ce-e496-4461-81f7-ef865a5f2da8}">
+    <Method Name="METH_Exit" Id="{21f5cad7-bd12-4237-814d-ed0257c8e35b}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
@@ -119,7 +119,7 @@ lrDeceleration := 0;
 lrJerk := 0;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Main" Id="{04b4cb2c-5fdd-4585-a000-6a7f041e44b7}">
+    <Method Name="METH_Main" Id="{f09c1c56-7ade-4a5a-abdb-2c9c86a841e5}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>

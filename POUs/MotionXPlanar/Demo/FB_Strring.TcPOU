@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="FB_Strring" Id="{ba5e848f-636f-4046-8cfa-0261863d9234}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Strring" Id="{70080744-1019-46df-99f4-762df655a9b1}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Strring EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
@@ -92,7 +92,7 @@ CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
-    <Action Name="ACT_SetExternalSetPoint" Id="{921149fd-6397-4780-baf4-07335fd8cd99}">
+    <Action Name="ACT_SetExternalSetPoint" Id="{fcba04b3-a4aa-42c0-a53a-6965af2665e8}">
       <Implementation>
         <ST><![CDATA[	stMoverVector_ActPos.x := THIS^.fbAxis_Slave_x.NcToPlc.ActPos;
 	stMoverVector_ActPos.y := THIS^.fbAxis_Slave_y.NcToPlc.ActPos;
@@ -121,13 +121,9 @@ ErrorID := udiErrorID;]]></ST>
 		setAcceleration:= stMoverVector_ActAcc);]]></ST>
       </Implementation>
     </Action>
-    <Method Name="METH_Busy" Id="{3c2eac9c-d94b-4b60-9b22-37e9ee77f4f6}">
+    <Method Name="METH_Busy" Id="{cc5af61f-5c37-488f-96b8-260e3138b41d}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Busy : BOOL
-VAR
-	iForAxis 					: INT;
-	Axis_B: AXIS_REF;
-END_VAR]]></Declaration>
+METHOD METH_Busy : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF fbFB_Mover.Error THEN
 	METH_Error();
@@ -397,7 +393,7 @@ CASE THIS^.uiState OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Enter" Id="{19f75a97-805f-4848-932c-fd34a59e269b}">
+    <Method Name="METH_Enter" Id="{4502362c-917c-4ca6-a597-edc6f4f6a69a}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
@@ -410,7 +406,7 @@ lrDeceleration := Deceleration;
 lrJerk := Jerk;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Exit" Id="{5b3c2789-9e47-47e7-b8cb-a62a9a7d756b}">
+    <Method Name="METH_Exit" Id="{4812ad40-6f05-49ac-afc5-26a42ceafd59}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
@@ -433,7 +429,7 @@ bSetExternalSetPoint :=FALSE;
 THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Main" Id="{5f46011f-6cea-45dd-857f-6fa44821b5cc}">
+    <Method Name="METH_Main" Id="{8301a965-0a45-46d0-8169-1c57b4579654}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>

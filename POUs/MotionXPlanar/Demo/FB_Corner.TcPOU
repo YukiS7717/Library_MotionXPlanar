@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="FB_Corner" Id="{4b719509-d869-4b0e-8ffa-0f6ef8ab5c96}" SpecialFunc="None">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Corner" Id="{85462f08-7bfb-47e3-8ad5-01d8827a2f00}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Corner EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
@@ -47,12 +47,14 @@ CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
-    <Method Name="METH_Busy" Id="{64d2c1fc-5301-40fc-b79c-ccdee200a7f4}">
+    <Method Name="METH_Busy" Id="{b502cca0-9365-49f1-893e-13090f4d2b49}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF fbFB_Mover.Error THEN
+        <ST><![CDATA[{warning disable C0371}
+{warning restore C0371}
+IF fbFB_Mover.Error THEN
 	METH_Error();
 	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
 	RETURN;
@@ -145,7 +147,7 @@ CASE THIS^.uiState OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Enter" Id="{8524ca72-7a10-471d-9454-a860b5c1bf02}">
+    <Method Name="METH_Enter" Id="{c1050bca-cdbb-4c4e-ac93-882d01da2618}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
@@ -159,7 +161,7 @@ lrJerk := Jerk;
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Exit" Id="{eed6a1e6-8041-4f74-93f8-77e45fae8f45}">
+    <Method Name="METH_Exit" Id="{5f7e234f-6dd1-47c1-bcea-48ccd83814c3}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
@@ -181,7 +183,7 @@ lrJerk := 0;
 fbMoveToPosition(fbMover:= THIS^.fbMover, Execute:= FALSE);]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Main" Id="{4a34d612-e1c8-4d1d-97be-820dc4e69610}">
+    <Method Name="METH_Main" Id="{a47ab050-8055-4e18-bc67-5743e403fe4e}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
@@ -224,6 +226,7 @@ END_IF]]></ST>
       <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="FB_Corner.METH_Busy">
+      <LineId Id="121" Count="1" />
       <LineId Id="7" Count="16" />
       <LineId Id="47" Count="0" />
       <LineId Id="40" Count="6" />

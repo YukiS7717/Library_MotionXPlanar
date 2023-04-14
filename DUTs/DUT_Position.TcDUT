@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <DUT Name="DUT_Position" Id="{3ccfd36b-4640-4783-9ac6-9338781baf98}">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="DUT_Position" Id="{5844358f-de1c-4b98-83f8-cc1b677e6160}">
     <Declaration><![CDATA[TYPE DUT_Position :
 STRUCT
 	x					: LREAL;
