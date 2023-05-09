@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_Halt" Id="{13dd3c8f-0fc3-4528-8ade-dde9ea3de7ac}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_Halt EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Halt EXTENDS FB_StatusExecuteFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 END_VAR

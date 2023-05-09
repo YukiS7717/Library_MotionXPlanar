@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_Strring" Id="{70080744-1019-46df-99f4-762df655a9b1}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Strring EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Strring EXTENDS FB_StatusExecuteFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 	fbAxis_Master						: AXIS_REF;
@@ -14,7 +14,7 @@ VAR_IN_OUT
 END_VAR
 VAR_INPUT
 	Execute								: BOOL;
-	Position							: DUT_Position;
+	Position							: ST_POSITION;
 	Velocity							: LREAL;
 	Acceleration						: LREAL;
 	Deceleration						: LREAL;
@@ -30,7 +30,7 @@ END_VAR
 VAR
 	uiState								: UINT;
 	//Input 内部変数
-	dutPosition							: DUT_Position;
+	dutPosition							: ST_POSITION;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
 	lrDeceleration						: LREAL;
@@ -53,7 +53,7 @@ VAR
 	stMoverVector_ActPos				: MoverVector;
 	stMoverVector_ActVel				: MoverVector;
 	stMoverVector_ActAcc				: MoverVector;
-	dutTargetPosition					: DUT_Position;
+	dutTargetPosition					: ST_POSITION;
 	bSetExternalSetPoint				: BOOL;
 	stExternalOpt						: ST_ExternalSetpointGenerationOptions;
 END_VAR

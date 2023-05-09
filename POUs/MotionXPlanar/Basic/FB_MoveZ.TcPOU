@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_MoveZ" Id="{6512ff6f-3106-4237-9fc5-c499a9f38e6e}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_MoveZ EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MoveZ EXTENDS FB_StatusExecuteFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 END_VAR
 VAR_INPUT
 	Execute								: BOOL;
-	Position							: DUT_Position;
+	Position							: ST_POSITION;
 	Velocity							: LREAL;
 	Acceleration						: LREAL;
 	Deceleration						: LREAL;
@@ -23,7 +23,7 @@ END_VAR
 VAR
 	uiState								: UINT;
 	//Input 内部変数
-	dutPosition							: DUT_Position;
+	dutPosition							: ST_POSITION;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
 	lrDeceleration						: LREAL;

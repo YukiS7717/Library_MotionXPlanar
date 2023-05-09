@@ -24,25 +24,10 @@
     <Placeholder>XPlanar_Motion</Placeholder>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DUTs\DUT_Position.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\ST_XPLANAR_DATA.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PlcTask.TcTTO">
+    <Compile Include="DUTs\ST_POSITION.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\General_FB\FB_StatusExecuteFB.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Interface\ITF_ExecuteFB.TcIO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Interface\ITF_ExtendsFB.TcIO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Interface\ITF_OutputFB.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MotionXPlanar\Basic\FB_Halt.TcPOU">
@@ -78,9 +63,6 @@
     <Compile Include="POUs\MotionXPlanar\Demo\FB_Tilt_AB.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\ReadFB\FB_StXPlanarData.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\ReadFB\ITF_StXPlanarData.TcIO">
       <SubType>Code</SubType>
     </Compile>
@@ -101,6 +83,9 @@
     <PlaceholderReference Include="Tc2_MC2">
       <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2_Camming">
+      <DefaultResolution>Tc2_MC2_Camming, * (Beckhoff Automation GmbH)</DefaultResolution>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -126,11 +111,6 @@
       <DefaultResolution>Tc3_XPlanarUtility, * (Beckhoff Automation GmbH &amp; Co. KG)</DefaultResolution>
       <Namespace>Tc3_XPlanarUtility</Namespace>
     </PlaceholderReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="XPlanar_Motion.tmc">
-      <SubType>Content</SubType>
-    </None>
   </ItemGroup>
   <ProjectExtensions>
     <PlcProjectOptions>

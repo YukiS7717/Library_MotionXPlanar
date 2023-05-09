@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_Corner" Id="{85462f08-7bfb-47e3-8ad5-01d8827a2f00}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Corner EXTENDS FB_StatusExecuteFB IMPLEMENTS ITF_ExtendsFB
-VAR_IN_OUT
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Corner EXTENDS FB_StatusExecuteFB
 	fbMover								: MC_PlanarMover;
 END_VAR
 VAR_INPUT
 	Execute								: BOOL;
-	Position							: ARRAY [0..3] OF DUT_Position;
+	Position							: ARRAY [0..3] OF ST_POSITION;
 	Velocity							: LREAL;
 	Acceleration						: LREAL;
 	Deceleration						: LREAL;
@@ -24,7 +23,7 @@ VAR
 	uiState								: UINT;
 	//Input 内部変数
 	xycPosition							: PositionXYC;
-	adutPosition							: ARRAY [0..3] OF DUT_Position;
+	adutPosition							: ARRAY [0..3] OF ST_POSITION;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
 	lrDeceleration						: LREAL;
