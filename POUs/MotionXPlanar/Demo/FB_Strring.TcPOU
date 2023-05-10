@@ -84,14 +84,64 @@ END_VAR]]></Declaration>
       <ST><![CDATA[Prop_Execute := Execute;
 METH_Main();
 
-fbFB_Mover.Update();
-
 Busy := bBusy;
 Done := bDone;
 CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
+    <Action Name="ACT_GearIn" Id="{c4f67770-a83c-41f0-af00-a3bc6d148b23}">
+      <Implementation>
+        <ST><![CDATA[//CamIn
+THIS^.fbCamIn_S_x(
+	Master:= THIS^.fbAxis_Master, 
+	Slave:= THIS^.fbAxis_Slave_x, 
+	Execute:= TRUE, 
+	MasterOffset:= 0, 
+	SlaveOffset:= 0, 
+	MasterScaling:= 1, 
+	SlaveScaling:= 1, 
+	CamTableID:= 1);
+
+THIS^.fbCamIn_S_y(
+	Master:= THIS^.fbAxis_Master, 
+	Slave:= THIS^.fbAxis_Slave_y, 
+	Execute:= TRUE, 
+	MasterOffset:= 0, 
+	SlaveOffset:= 0, 
+	MasterScaling:= 1, 
+	SlaveScaling:= 1, 
+	CamTableID:= 2);
+
+THIS^.fbCamIn_S_a(
+	Master:= THIS^.fbAxis_Master, 
+	Slave:= THIS^.fbAxis_Slave_a, 
+	Execute:= TRUE, 
+	MasterOffset:= 0, 
+	SlaveOffset:= 0, 
+	MasterScaling:= 1, 
+	SlaveScaling:= 1, 
+	CamTableID:= 3);
+
+THIS^.fbCamIn_S_b(
+	Master:= THIS^.fbAxis_Master, 
+	Slave:= THIS^.fbAxis_Slave_b, 
+	Execute:= TRUE, 
+	MasterOffset:= 0, 
+	SlaveOffset:= 0, 
+	MasterScaling:= 1, 
+	SlaveScaling:= 1, 
+	CamTableID:= 4);
+	
+IF fbCamIn_S_x.InSync AND fbCamIn_S_y.InSync AND fbCamIn_S_a.InSync AND fbCamIn_S_b.InSync  THEN
+	THIS^.uiState := State_StrringPlus;
+	fbCamIn_S_x(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_x, Execute:= FALSE);
+	fbCamIn_S_y(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_y, Execute:= FALSE);
+	fbCamIn_S_a(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_a, Execute:= FALSE);
+	fbCamIn_S_b(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_b, Execute:= FALSE);
+END_IF]]></ST>
+      </Implementation>
+    </Action>
     <Action Name="ACT_SetExternalSetPoint" Id="{fcba04b3-a4aa-42c0-a53a-6965af2665e8}">
       <Implementation>
         <ST><![CDATA[	stMoverVector_ActPos.x := THIS^.fbAxis_Slave_x.NcToPlc.ActPos;
@@ -125,7 +175,9 @@ ErrorID := udiErrorID;]]></ST>
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Busy : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF fbFB_Mover.Error THEN
+        <ST><![CDATA[{warning disable C0371}
+{warning restore C0371}
+IF fbFB_Mover.Error THEN
 	METH_Error();
 	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
 	RETURN;
@@ -213,54 +265,7 @@ CASE THIS^.uiState OF
 	THIS^.uiState := State_CamIn;
 	
 	State_CamIn: 
-	//CamIn
-	THIS^.fbCamIn_S_x(
-		Master:= THIS^.fbAxis_Master, 
-		Slave:= THIS^.fbAxis_Slave_x, 
-		Execute:= TRUE, 
-		MasterOffset:= 0, 
-		SlaveOffset:= 0, 
-		MasterScaling:= 1, 
-		SlaveScaling:= 1, 
-		CamTableID:= 1);
-	
-	THIS^.fbCamIn_S_y(
-		Master:= THIS^.fbAxis_Master, 
-		Slave:= THIS^.fbAxis_Slave_y, 
-		Execute:= TRUE, 
-		MasterOffset:= 0, 
-		SlaveOffset:= 0, 
-		MasterScaling:= 1, 
-		SlaveScaling:= 1, 
-		CamTableID:= 2);
-	
-	THIS^.fbCamIn_S_a(
-		Master:= THIS^.fbAxis_Master, 
-		Slave:= THIS^.fbAxis_Slave_a, 
-		Execute:= TRUE, 
-		MasterOffset:= 0, 
-		SlaveOffset:= 0, 
-		MasterScaling:= 1, 
-		SlaveScaling:= 1, 
-		CamTableID:= 3);
-	
-	THIS^.fbCamIn_S_b(
-		Master:= THIS^.fbAxis_Master, 
-		Slave:= THIS^.fbAxis_Slave_b, 
-		Execute:= TRUE, 
-		MasterOffset:= 0, 
-		SlaveOffset:= 0, 
-		MasterScaling:= 1, 
-		SlaveScaling:= 1, 
-		CamTableID:= 4);
-		
-	IF fbCamIn_S_x.InSync AND fbCamIn_S_y.InSync AND fbCamIn_S_a.InSync AND fbCamIn_S_b.InSync  THEN
-		THIS^.uiState := State_StrringPlus;
-		fbCamIn_S_x(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_x, Execute:= FALSE);
-		fbCamIn_S_y(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_y, Execute:= FALSE);
-		fbCamIn_S_a(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_a, Execute:= FALSE);
-		fbCamIn_S_b(Master:= THIS^.fbAxis_Master, Slave:= THIS^.fbAxis_Slave_b, Execute:= FALSE);
-	END_IF
+	ACT_GearIn();
 	
 	State_StrringPlus: 
 	//+撹拌
@@ -390,11 +395,14 @@ CASE THIS^.uiState OF
 	16#FFFF:
 	METH_Done();
 	
-END_CASE]]></ST>
+END_CASE
+
+fbFB_Mover.Update();]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{4502362c-917c-4ca6-a597-edc6f4f6a69a}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
@@ -407,8 +415,9 @@ lrJerk := Jerk;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{4812ad40-6f05-49ac-afc5-26a42ceafd59}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Exit : BOOL
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
+METHOD  METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := FALSE;
@@ -430,7 +439,8 @@ THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{8301a965-0a45-46d0-8169-1c57b4579654}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
@@ -468,8 +478,13 @@ END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_Strring">
-      <LineId Id="41" Count="8" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="45" Count="4" />
       <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Strring.ACT_GearIn">
+      <LineId Id="2" Count="46" />
+      <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="FB_Strring.ACT_SetExternalSetPoint">
       <LineId Id="27" Count="0" />
@@ -483,6 +498,8 @@ END_IF]]></ST>
       <LineId Id="58" Count="4" />
     </LineIds>
     <LineIds Name="FB_Strring.METH_Busy">
+      <LineId Id="626" Count="0" />
+      <LineId Id="625" Count="0" />
       <LineId Id="235" Count="12" />
       <LineId Id="16" Count="0" />
       <LineId Id="515" Count="0" />
@@ -519,16 +536,6 @@ END_IF]]></ST>
       <LineId Id="523" Count="0" />
       <LineId Id="522" Count="0" />
       <LineId Id="339" Count="1" />
-      <LineId Id="451" Count="0" />
-      <LineId Id="342" Count="7" />
-      <LineId Id="341" Count="0" />
-      <LineId Id="350" Count="0" />
-      <LineId Id="352" Count="8" />
-      <LineId Id="351" Count="0" />
-      <LineId Id="362" Count="8" />
-      <LineId Id="361" Count="0" />
-      <LineId Id="372" Count="9" />
-      <LineId Id="383" Count="5" />
       <LineId Id="382" Count="0" />
       <LineId Id="390" Count="1" />
       <LineId Id="450" Count="0" />
@@ -582,6 +589,8 @@ END_IF]]></ST>
       <LineId Id="511" Count="1" />
       <LineId Id="454" Count="0" />
       <LineId Id="249" Count="0" />
+      <LineId Id="628" Count="0" />
+      <LineId Id="627" Count="0" />
     </LineIds>
     <LineIds Name="FB_Strring.METH_Enter">
       <LineId Id="5" Count="4" />

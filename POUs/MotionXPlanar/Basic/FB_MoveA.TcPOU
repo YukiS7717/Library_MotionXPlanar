@@ -51,7 +51,9 @@ ErrorID := udiErrorID;]]></ST>
 METHOD METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF fbFB_Mover.Error THEN
+        <ST><![CDATA[{warning disable C0371}
+{warning restore C0371}
+IF fbFB_Mover.Error THEN
 	METH_Error();
 	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
 	RETURN;
@@ -162,6 +164,8 @@ END_IF]]></ST>
       <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="FB_MoveA.METH_Busy">
+      <LineId Id="119" Count="0" />
+      <LineId Id="118" Count="0" />
       <LineId Id="7" Count="16" />
       <LineId Id="101" Count="0" />
       <LineId Id="110" Count="0" />

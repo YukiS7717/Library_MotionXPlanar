@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_StatusExecuteFB" Id="{d5f257bd-48dd-4936-96a9-f8db7aae2619}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT FB_StatusExecuteFB
+    <Declaration><![CDATA[ {attribute 'hide'}
+FUNCTION_BLOCK ABSTRACT FB_StatusExecuteFB
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -19,7 +20,7 @@ END_VAR
       <ST><![CDATA[]]></ST>
     </Implementation>
     <Method Name="METH_Busy" Id="{e4701e2b-57b4-45d2-856e-6a77476b5fa3}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
+      <Declaration><![CDATA[//{warning 'add method implementation '}
 METHOD ABSTRACT METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
@@ -27,8 +28,8 @@ METHOD ABSTRACT METH_Busy : BOOL
       </Implementation>
     </Method>
     <Method Name="METH_CommandAborted" Id="{8a06b7e9-cd23-4ca9-8366-3af741ea5757}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD METH_CommandAborted : BOOL
+      <Declaration><![CDATA[//{warning 'add method implementation '}
+METHOD PROTECTED METH_CommandAborted : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_CommandAborted := TRUE;
@@ -36,8 +37,8 @@ Prop_Busy := FALSE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Done" Id="{27acebb5-47cc-4300-80a1-d92566086c17}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD METH_Done : BOOL
+      <Declaration><![CDATA[//{warning 'add method implementation '}
+METHOD PROTECTED METH_Done : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := TRUE;
@@ -54,16 +55,16 @@ END_VAR
       </Implementation>
     </Method>
     <Method Name="METH_Error" Id="{4884cb9b-c09d-440b-91cb-bbf4984ee557}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD METH_Error : BOOL]]></Declaration>
+      <Declaration><![CDATA[//{warning 'add method implementation '}
+METHOD PROTECTED METH_Error : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Error := TRUE;
 Prop_Busy := FALSE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Execute" Id="{ca35221a-7db9-428d-afe1-aeeda118cf30}">
-      <Declaration><![CDATA[{warning 'add method implementation '}
-METHOD METH_Execute : BOOL
+      <Declaration><![CDATA[//{warning 'add method implementation '}
+METHOD PROTECTED METH_Execute : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Execute := TRUE;

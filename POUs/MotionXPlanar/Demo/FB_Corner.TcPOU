@@ -2,6 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="FB_Corner" Id="{85462f08-7bfb-47e3-8ad5-01d8827a2f00}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Corner EXTENDS FB_StatusExecuteFB
+VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 END_VAR
 VAR_INPUT
@@ -147,7 +148,8 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{c1050bca-cdbb-4c4e-ac93-882d01da2618}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
@@ -161,7 +163,8 @@ lrJerk := Jerk;
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{5f7e234f-6dd1-47c1-bcea-48ccd83814c3}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
@@ -183,7 +186,8 @@ fbMoveToPosition(fbMover:= THIS^.fbMover, Execute:= FALSE);]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{a47ab050-8055-4e18-bc67-5743e403fe4e}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
       <Implementation>

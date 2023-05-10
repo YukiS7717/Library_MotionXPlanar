@@ -132,7 +132,8 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{fa9f6fb2-7d62-4698-8cbd-445d918d2f20}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
@@ -146,7 +147,8 @@ lrJerk := Jerk;
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{67ec6446-4911-43da-a96f-ad11c1ad81da}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
@@ -165,7 +167,8 @@ lrJerk := 0;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{27f9a07d-7bde-408d-9eb9-75cd1273a409}">
-      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
 METHOD METH_Main : BOOL
 ]]></Declaration>
       <Implementation>

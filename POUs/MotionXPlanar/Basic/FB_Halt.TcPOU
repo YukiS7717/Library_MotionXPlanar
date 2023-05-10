@@ -36,7 +36,6 @@ END_VAR
     <Implementation>
       <ST><![CDATA[Prop_Execute := Execute;
 METH_Main();
-
 fbFB_Mover.Update();
 
 Busy := bBusy;
@@ -155,7 +154,8 @@ END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="FB_Halt">
-      <LineId Id="17" Count="8" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="20" Count="5" />
       <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="FB_Halt.METH_Busy">
