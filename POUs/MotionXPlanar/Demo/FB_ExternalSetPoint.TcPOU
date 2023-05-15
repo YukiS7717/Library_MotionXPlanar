@@ -14,7 +14,7 @@ VAR_IN_OUT
 END_VAR
 VAR_INPUT
 	Execute								: BOOL;
-	Position							: ST_POSITION;
+	Position							: ST_POSITION; //x: Master Position
 	Velocity							: LREAL;
 	Acceleration						: LREAL;
 	Deceleration						: LREAL;
@@ -144,7 +144,7 @@ IF bSetExternalSetPoint THEN
 	ACT_SetExternalSetPoint();	
 END_IF
 CASE THIS^.uiState OF
-	State_StartExternal:
+	0:
 	// ExternalSetpoint開始
 	bSetExternalSetPoint := TRUE;
 	stExternalOpt.mode := MC_EXTERNAL_SET_POSITION_MODE.Relative;
@@ -156,7 +156,7 @@ CASE THIS^.uiState OF
 	THIS^.fbAbsolute_M(
 		Axis:= THIS^.fbAxis_Master, 
 		Execute:= TRUE, 
-		Position:= 360, 
+		Position:= dutPosition.x, 
 		Velocity:= THIS^.lrVelocity, 
 		Acceleration:= THIS^.lrAcceleration, 
 		Deceleration:= THIS^.lrDeceleration, 
