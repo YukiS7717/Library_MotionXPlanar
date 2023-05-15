@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ExternalSetPoint" Id="{70080744-1019-46df-99f4-762df655a9b1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_ExternalSetPoint EXTENDS FB_StatusExecuteFB
+VAR_IN_OUT
+	fbMover								: MC_PlanarMover;
+	fbAxis_Master						: AXIS_REF;
+	fbAxis_Slave_x						: AXIS_REF;
+	fbAxis_Slave_y						: AXIS_REF;
+	fbAxis_Slave_z						: AXIS_REF;
+	fbAxis_Slave_a						: AXIS_REF;
+	fbAxis_Slave_b						: AXIS_REF;
+	fbAxis_Slave_c						: AXIS_REF;
+END_VAR
+VAR_INPUT
+	Execute								: BOOL;
+	Position							: ST_POSITION;
+	Velocity							: LREAL;
+	Acceleration						: LREAL;
+	Deceleration						: LREAL;
+	Jerk								: LREAL;
+END_VAR
+VAR_OUTPUT
+	Done								: BOOL;
+	Busy								: BOOL;
+	CommandAborted						: BOOL;
+	Error								: BOOL;
+	ErrorID								: UDINT;
+END_VAR
+VAR
+	uiState								: UINT;
+	//Input 内部変数
+	dutPosition							: ST_POSITION;
+	lrVelocity							: LREAL;
+	lrAcceleration						: LREAL;
+	lrDeceleration						: LREAL;
+	lrJerk								: LREAL;
+	
+	//ローカル
+	fbFB_Mover							: MC_PlanarFeedback;
+	fbMoveZ								: FB_MoveZ;
+	fbMoveB								: FB_MoveB;
+	fbMoveToPosition					: FB_MoveToPosition;
+	fbCamIn_S_x							: MC_CamIn;
+	fbCamIn_S_y							: MC_CamIn;
+	fbCamIn_S_a							: MC_CamIn;
+	fbCamIn_S_b							: MC_CamIn;
+	fbCamOut_S_x						: MC_CamOut;
+	fbCamOut_S_y						: MC_CamOut;
+	fbCamOut_S_a						: MC_CamOut;
+	fbCamOut_S_b						: MC_CamOut;
+	fbAbsolute_M						: MC_MoveAbsolute;
+	stMoverVector_ActPos				: MoverVector;
+	stMoverVector_ActVel				: MoverVector;
+	stMoverVector_ActAcc				: MoverVector;
+	dutTargetPosition					: ST_POSITION;
+	bSetExternalSetPoint				: BOOL;
+	stExternalOpt						: ST_ExternalSetpointGenerationOptions;
+END_VAR
+
+VAR CONSTANT
+	//傾き量
+	lrStrringStartPos_x					: LREAL := -40;
+	lrStrringStartPos_z					: LREAL := 4;
+	lrStrringStartPos_b					: LREAL := -2;
+	lrStrringEndPos_z					: LREAL := 2;
+	lrStrringEndPos_b					: LREAL := 0;
+	
+	//State
+	State_StartPosition					: UINT := 0;
+	State_StartZ						: UINT := 10;
+	State_StartB						: UINT := 20;
+	State_StartExternal					: UINT := 30;
+	State_CamIn							: UINT := 40;
+	State_StrringPlus					: UINT := 50;
+	State_StrringMinus					: UINT := 60;
+	State_EndExternal					: UINT := 70;
+	State_CamOut						: UINT := 80;
+	State_EndPosition					: UINT := 90;
+	State_EndZ							: UINT := 100;
+	State_EndB							: UINT := 110;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Prop_Execute := Execute;
+METH_Main();
+
+Busy := bBusy;
+Done := bDone;
+CommandAborted := bCommandAborted;
+Error := bError;
+ErrorID := udiErrorID;]]></ST>
+    </Implementation>
+    <Action Name="ACT_SetExternalSetPoint" Id="{fcba04b3-a4aa-42c0-a53a-6965af2665e8}">
+      <Implementation>
+        <ST><![CDATA[stMoverVector_ActPos.x := THIS^.fbAxis_Slave_x.NcToPlc.ActPos;
+stMoverVector_ActPos.y := THIS^.fbAxis_Slave_y.NcToPlc.ActPos;
+stMoverVector_ActPos.z := THIS^.fbAxis_Slave_z.NcToPlc.ActPos;
+stMoverVector_ActPos.a := THIS^.fbAxis_Slave_a.NcToPlc.ActPos;
+stMoverVector_ActPos.b := THIS^.fbAxis_Slave_b.NcToPlc.ActPos;
+stMoverVector_ActPos.c := THIS^.fbAxis_Slave_c.NcToPlc.ActPos;
+
+stMoverVector_ActVel.x := THIS^.fbAxis_Slave_x.NcToPlc.ActVelo;
+stMoverVector_ActVel.y := THIS^.fbAxis_Slave_y.NcToPlc.ActVelo;
+stMoverVector_ActVel.z := THIS^.fbAxis_Slave_z.NcToPlc.ActVelo;
+stMoverVector_ActVel.a := THIS^.fbAxis_Slave_a.NcToPlc.ActVelo;
+stMoverVector_ActVel.b := THIS^.fbAxis_Slave_b.NcToPlc.ActVelo;
+stMoverVector_ActVel.c := THIS^.fbAxis_Slave_c.NcToPlc.ActVelo;
+
+stMoverVector_ActAcc.x := THIS^.fbAxis_Slave_x.NcToPlc.ActAcc;
+stMoverVector_ActAcc.y := THIS^.fbAxis_Slave_y.NcToPlc.ActAcc;
+stMoverVector_ActAcc.z := THIS^.fbAxis_Slave_z.NcToPlc.ActAcc;
+stMoverVector_ActAcc.a := THIS^.fbAxis_Slave_a.NcToPlc.ActAcc;
+stMoverVector_ActAcc.b := THIS^.fbAxis_Slave_b.NcToPlc.ActAcc;
+stMoverVector_ActAcc.c := THIS^.fbAxis_Slave_c.NcToPlc.ActAcc;
+
+THIS^.fbMover.SetExternalSetpoint(
+	setPosition:= stMoverVector_ActPos, 
+	setVelocity:= stMoverVector_ActVel, 
+	setAcceleration:= stMoverVector_ActAcc);]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="METH_Busy" Id="{cc5af61f-5c37-488f-96b8-260e3138b41d}">
+      <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Busy : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+{warning restore C0371}
+IF fbFB_Mover.Error THEN
+	METH_Error();
+	Prop_ErrorID := fbFB_Mover.ErrorId; //Moverがエラー
+	RETURN;
+END_IF
+IF THIS^.fbMover.MCTOPLC.STD.State = MC_PLANAR_STATE.Error THEN
+	METH_Error();
+	Prop_ErrorID := 1; //Moverがエラー
+	RETURN;
+END_IF
+IF fbFB_Mover.Aborted THEN
+	METH_CommandAborted();
+	RETURN;
+END_IF
+
+IF bSetExternalSetPoint THEN
+	ACT_SetExternalSetPoint();	
+END_IF
+CASE THIS^.uiState OF
+	State_StartExternal:
+	// ExternalSetpoint開始
+	bSetExternalSetPoint := TRUE;
+	stExternalOpt.mode := MC_EXTERNAL_SET_POSITION_MODE.Relative;
+	THIS^.fbMover.StartExternalSetpointGeneration(commandFeedback:= 0, options:= stExternalOpt);
+	THIS^.uiState := State_StrringPlus;
+	
+	State_StrringPlus: 
+	//+360
+	THIS^.fbAbsolute_M(
+		Axis:= THIS^.fbAxis_Master, 
+		Execute:= TRUE, 
+		Position:= 360, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
+		
+	IF THIS^.fbAbsolute_M.Done THEN
+		THIS^.uiState := State_StrringMinus;
+		THIS^.fbAbsolute_M(Axis:= THIS^.fbAxis_Master, Execute:= FALSE); 
+	END_IF
+	
+	State_StrringMinus: 
+	//原点に戻る
+	THIS^.fbAbsolute_M(
+		Axis:= THIS^.fbAxis_Master, 
+		Execute:= TRUE, 
+		Position:= 0, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
+		
+	IF THIS^.fbAbsolute_M.Done THEN
+		THIS^.uiState := State_EndExternal;
+		THIS^.fbAbsolute_M(Axis:= THIS^.fbAxis_Master, Execute:= FALSE); 
+	END_IF
+	
+	State_EndExternal:
+	// ExternalSetpoint終了
+	bSetExternalSetPoint := FALSE;
+	THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);
+	THIS^.uiState := 16#FFFF;
+	
+	16#FFFF:
+	METH_Done();
+	
+END_CASE
+
+fbFB_Mover.Update();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Enter" Id="{4502362c-917c-4ca6-a597-edc6f4f6a69a}">
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Enter : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Input 内部変数に移す
+dutPosition := Position;
+lrVelocity := Velocity;
+lrAcceleration := Acceleration;
+lrDeceleration := Deceleration;
+lrJerk := Jerk;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Exit" Id="{4812ad40-6f05-49ac-afc5-26a42ceafd59}">
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
+METHOD  METH_Exit : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Prop_Done := FALSE;
+Prop_Busy := FALSE;
+Prop_CommandAborted := FALSE;
+Prop_Error := FALSE;
+Prop_ErrorID := 0;
+
+// 内部変数をリフレッシュする
+uiState := 0;
+lrVelocity := 0;
+lrAcceleration := 0;
+lrDeceleration := 0;
+lrJerk := 0;
+bSetExternalSetPoint :=FALSE;
+
+//External Set Point 終了
+THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Main" Id="{8301a965-0a45-46d0-8169-1c57b4579654}">
+      <Declaration><![CDATA[ {attribute 'hide'}
+//{error 'add method implementation or delete method to use base implementation'}
+METHOD METH_Main : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//Doneに遷移
+IF SUPER^.bDone AND SUPER^.bExecute THEN
+	METH_Done();
+	RETURN;
+END_IF
+//Errorに遷移
+IF SUPER^.bError AND SUPER^.bExecute THEN
+	METH_Error();
+	RETURN;
+END_IF
+//CommandAbortedに遷移
+IF SUPER^.bCommandAborted AND SUPER^.bExecute THEN
+	METH_CommandAborted();
+	RETURN;
+END_IF
+//FBをリフレッシュ
+//状態がDone, Error, CommandAborted時に Execute FALSE で遷移
+IF (SUPER^.bDone OR SUPER^.bError OR SUPER^.bCommandAborted) AND NOT SUPER^.bExecute THEN
+	METH_Exit();
+	RETURN;
+END_IF
+
+//実行開始
+IF SUPER^.bExecute AND NOT SUPER^.bBusy THEN
+	METH_Execute();
+	METH_Enter();
+END_IF
+//実行中
+IF SUPER^.bBusy THEN
+	METH_Busy();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_ExternalSetPoint">
+      <LineId Id="41" Count="1" />
+      <LineId Id="45" Count="4" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ExternalSetPoint.ACT_SetExternalSetPoint">
+      <LineId Id="27" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="44" Count="3" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="48" Count="4" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="53" Count="4" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="58" Count="4" />
+    </LineIds>
+    <LineIds Name="FB_ExternalSetPoint.METH_Busy">
+      <LineId Id="626" Count="0" />
+      <LineId Id="625" Count="0" />
+      <LineId Id="235" Count="12" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="515" Count="0" />
+      <LineId Id="654" Count="2" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="519" Count="2" />
+      <LineId Id="524" Count="0" />
+      <LineId Id="523" Count="0" />
+      <LineId Id="390" Count="0" />
+      <LineId Id="658" Count="0" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="450" Count="0" />
+      <LineId Id="392" Count="3" />
+      <LineId Id="399" Count="2" />
+      <LineId Id="371" Count="0" />
+      <LineId Id="402" Count="1" />
+      <LineId Id="407" Count="0" />
+      <LineId Id="406" Count="0" />
+      <LineId Id="405" Count="0" />
+      <LineId Id="250" Count="0" />
+      <LineId Id="410" Count="0" />
+      <LineId Id="449" Count="0" />
+      <LineId Id="411" Count="11" />
+      <LineId Id="408" Count="0" />
+      <LineId Id="423" Count="0" />
+      <LineId Id="525" Count="0" />
+      <LineId Id="528" Count="1" />
+      <LineId Id="532" Count="0" />
+      <LineId Id="526" Count="0" />
+      <LineId Id="473" Count="0" />
+      <LineId Id="511" Count="1" />
+      <LineId Id="454" Count="0" />
+      <LineId Id="249" Count="0" />
+      <LineId Id="628" Count="0" />
+      <LineId Id="627" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ExternalSetPoint.METH_Enter">
+      <LineId Id="5" Count="4" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ExternalSetPoint.METH_Exit">
+      <LineId Id="5" Count="7" />
+      <LineId Id="14" Count="2" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_ExternalSetPoint.METH_Main">
+      <LineId Id="5" Count="29" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

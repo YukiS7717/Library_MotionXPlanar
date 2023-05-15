@@ -57,7 +57,7 @@
     <Compile Include="POUs\MotionXPlanar\Demo\FB_UpDown.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\MotionXPlanar\Demo\FB_Strring.TcPOU">
+    <Compile Include="POUs\MotionXPlanar\Demo\FB_ExternalSetPoint.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MotionXPlanar\Demo\FB_Tilt_AB.TcPOU">
