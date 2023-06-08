@@ -50,7 +50,7 @@ ErrorID := udiErrorID;]]></ST>
     <Method Name="METH_Busy" Id="{768bee42-18f3-408d-b4f6-3ff7973da85d}">
       <Declaration><![CDATA[//{warning 'add method implementation '}
 //実行動作
-METHOD METH_Busy : BOOL
+METHOD INTERNAL METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF fbFB_Mover.Error THEN
@@ -90,7 +90,7 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{1ff26711-bfd5-4d1c-97cd-2ca76c7c6088}">
-      <Declaration><![CDATA[METHOD METH_Enter : BOOL
+      <Declaration><![CDATA[METHOD INTERNAL METH_Enter : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -105,7 +105,7 @@ lrJerk := Jerk;
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{86c6e772-c6ea-400c-8e4e-a2ca4ab13002}">
-      <Declaration><![CDATA[METHOD METH_Exit : BOOL
+      <Declaration><![CDATA[METHOD INTERNAL METH_Exit : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -128,7 +128,7 @@ lrJerk := 0;
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{81c61012-eae8-4c52-ba1b-0f2300c5494b}">
-      <Declaration><![CDATA[METHOD METH_Main : BOOL
+      <Declaration><![CDATA[METHOD INTERNAL METH_Main : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>

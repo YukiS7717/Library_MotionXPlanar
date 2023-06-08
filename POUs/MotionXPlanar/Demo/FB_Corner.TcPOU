@@ -24,7 +24,7 @@ VAR
 	uiState								: UINT;
 	//Input 内部変数
 	xycPosition							: PositionXYC;
-	adutPosition							: ARRAY [0..3] OF ST_POSITION;
+	adutPosition						: ARRAY [0..3] OF ST_POSITION;
 	lrVelocity							: LREAL;
 	lrAcceleration						: LREAL;
 	lrDeceleration						: LREAL;
@@ -49,7 +49,7 @@ ErrorID := udiErrorID;]]></ST>
     </Implementation>
     <Method Name="METH_Busy" Id="{b502cca0-9365-49f1-893e-13090f4d2b49}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Busy : BOOL
+METHOD INTERNAL METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
@@ -150,7 +150,7 @@ END_CASE]]></ST>
     <Method Name="METH_Enter" Id="{c1050bca-cdbb-4c4e-ac93-882d01da2618}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Enter : BOOL
+METHOD INTERNAL METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Input 内部変数に移す
@@ -165,7 +165,7 @@ lrJerk := Jerk;
     <Method Name="METH_Exit" Id="{5f7e234f-6dd1-47c1-bcea-48ccd83814c3}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Exit : BOOL
+METHOD INTERNAL METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := FALSE;
@@ -182,13 +182,14 @@ lrAcceleration := 0;
 lrDeceleration := 0;
 lrJerk := 0;
 
+//FBの初期化
 fbMoveToPosition(fbMover:= THIS^.fbMover, Execute:= FALSE);]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{a47ab050-8055-4e18-bc67-5743e403fe4e}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Main : BOOL
+METHOD INTERNAL METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Doneに遷移
@@ -264,7 +265,7 @@ END_IF]]></ST>
     <LineIds Name="FB_Corner.METH_Exit">
       <LineId Id="7" Count="11" />
       <LineId Id="4" Count="0" />
-      <LineId Id="20" Count="0" />
+      <LineId Id="24" Count="1" />
       <LineId Id="19" Count="0" />
     </LineIds>
     <LineIds Name="FB_Corner.METH_Main">

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <POU Name="FB_UpDown" Id="{46175556-b3da-421e-8adc-56b30cf2cba8}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_UpDown EXTENDS FB_StatusExecuteFB
+  <POU Name="FB_Tilt_A" Id="{db625dc9-5fd0-45ad-b494-67861582e8f8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FINAL FB_Tilt_A EXTENDS FB_StatusExecuteFB
 VAR_IN_OUT
 	fbMover								: MC_PlanarMover;
 END_VAR
@@ -33,12 +33,14 @@ VAR
 	fbFB_Mover							: MC_PlanarFeedback;
 	dutTargetPosition					: ST_POSITION;
 	fbConstraint						: DynamicConstraint_PathXY;
-	fbMoveZ								: FB_MoveZ;
+	fbMoveA								: FB_MoveA;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[Prop_Execute := Execute;
 METH_Main();
+
+fbFB_Mover.Update();
 
 Busy := bBusy;
 Done := bDone;
@@ -46,7 +48,7 @@ CommandAborted := bCommandAborted;
 Error := bError;
 ErrorID := udiErrorID;]]></ST>
     </Implementation>
-    <Method Name="METH_Busy" Id="{ff67c057-949f-42ae-b0d1-d33366e9514c}">
+    <Method Name="METH_Busy" Id="{9ff795b3-3cce-4732-9bca-9b032c9aea48}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
 METHOD INTERNAL METH_Busy : BOOL
 ]]></Declaration>
@@ -68,9 +70,9 @@ END_IF
 
 CASE THIS^.uiState OF
 	0:
-	//+Zに上昇
-	dutTargetPosition.z := dutPosition.z;
-	fbMoveZ(
+	//+Aに傾ける
+	dutTargetPosition.a := dutPosition.a;
+	fbMoveA(
 		fbMover:= THIS^.fbMover, 
 		Execute:= TRUE, 
 		Position:= dutTargetPosition, 
@@ -78,18 +80,18 @@ CASE THIS^.uiState OF
 		Acceleration:= THIS^.lrAcceleration, 
 		Deceleration:= THIS^.lrDeceleration, 
 		Jerk:= THIS^.lrJerk);
-	IF fbMoveZ.Done THEN
-		fbMoveZ(fbMover:= THIS^.fbMover, Execute:= FALSE);
+	IF fbMoveA.Done THEN
+		fbMoveA(fbMover:= THIS^.fbMover, Execute:= FALSE);
 		THIS^.uiState := 10;
-	ELSIF fbMoveZ.Error THEN
+	ELSIF fbMoveA.Error THEN
 		METH_Error();
 		Prop_ErrorID := 10; //Moverがエラー
 	END_IF
 	
 	10:
-	//ZにDefaultに設定
-	dutTargetPosition.z := 2.0;
-	fbMoveZ(
+	//-Aに傾ける
+	dutTargetPosition.a := -1*dutPosition.a;
+	fbMoveA(
 		fbMover:= THIS^.fbMover, 
 		Execute:= TRUE, 
 		Position:= dutTargetPosition, 
@@ -97,22 +99,39 @@ CASE THIS^.uiState OF
 		Acceleration:= THIS^.lrAcceleration, 
 		Deceleration:= THIS^.lrDeceleration, 
 		Jerk:= THIS^.lrJerk);
-	IF fbMoveZ.Done THEN
-		fbMoveZ(fbMover:= THIS^.fbMover, Execute:= FALSE);
-		THIS^.uiState := 16#FFFF;
-	ELSIF fbMoveZ.Error THEN
+	IF fbMoveA.Done THEN
+		fbMoveA(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := 30;
+	ELSIF fbMoveA.Error THEN
 		METH_Error();
 		Prop_ErrorID := 11; //Moverがエラー
+	END_IF
+
+	30:
+	//0に戻す
+	dutTargetPosition.a := 0;
+	fbMoveA(
+		fbMover:= THIS^.fbMover, 
+		Execute:= TRUE, 
+		Position:= dutTargetPosition, 
+		Velocity:= THIS^.lrVelocity, 
+		Acceleration:= THIS^.lrAcceleration, 
+		Deceleration:= THIS^.lrDeceleration, 
+		Jerk:= THIS^.lrJerk);
+	IF fbMoveA.Done THEN
+		fbMoveA(fbMover:= THIS^.fbMover, Execute:= FALSE);
+		THIS^.uiState := 16#FFFF;
+	ELSIF fbMoveA.Error THEN
+		METH_Error();
+		Prop_ErrorID := 12; //Moverがエラー
 	END_IF
 	
 	16#FFFF:
 	METH_Done();
-END_CASE
-
-fbFB_Mover.Update();]]></ST>
+END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Enter" Id="{4c4a520f-d329-489b-8578-f8b8df2d2f67}">
+    <Method Name="METH_Enter" Id="{40e40d96-2c5f-497b-8347-c374bcee5f5a}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
 METHOD INTERNAL METH_Enter : BOOL
@@ -124,10 +143,12 @@ lrVelocity := Velocity;
 lrAcceleration := Acceleration;
 lrDeceleration := Deceleration;
 lrJerk := Jerk;
+
+
 ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Exit" Id="{3108c350-6f07-4a29-8225-a7df8b131456}">
+    <Method Name="METH_Exit" Id="{6ed1c824-1fb3-498e-9d48-02133266c88c}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
 METHOD INTERNAL METH_Exit : BOOL
@@ -144,10 +165,13 @@ uiState := 0;
 lrVelocity := 0;
 lrAcceleration := 0;
 lrDeceleration := 0;
-lrJerk := 0;]]></ST>
+lrJerk := 0;
+
+//FBの初期化
+fbMoveA(fbMover:= THIS^.fbMover, Execute:= FALSE); ]]></ST>
       </Implementation>
     </Method>
-    <Method Name="METH_Main" Id="{1df0e122-9579-4533-927c-f5361056cbe2}">
+    <Method Name="METH_Main" Id="{d792ff9e-0de0-4a05-8e41-3f003cfd5ff8}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
 METHOD INTERNAL METH_Main : BOOL
@@ -186,32 +210,42 @@ IF SUPER^.bBusy THEN
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="FB_UpDown">
-      <LineId Id="42" Count="1" />
-      <LineId Id="46" Count="4" />
+    <LineIds Name="FB_Tilt_A">
+      <LineId Id="42" Count="8" />
       <LineId Id="9" Count="0" />
     </LineIds>
-    <LineIds Name="FB_UpDown.METH_Busy">
+    <LineIds Name="FB_Tilt_A.METH_Busy">
       <LineId Id="5" Count="17" />
       <LineId Id="159" Count="0" />
-      <LineId Id="23" Count="16" />
-      <LineId Id="185" Count="15" />
-      <LineId Id="55" Count="0" />
+      <LineId Id="23" Count="14" />
+      <LineId Id="56" Count="1" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="96" Count="13" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="142" Count="1" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="145" Count="12" />
+      <LineId Id="141" Count="0" />
       <LineId Id="92" Count="2" />
       <LineId Id="4" Count="0" />
-      <LineId Id="204" Count="0" />
-      <LineId Id="203" Count="0" />
     </LineIds>
-    <LineIds Name="FB_UpDown.METH_Enter">
+    <LineIds Name="FB_Tilt_A.METH_Enter">
       <LineId Id="5" Count="5" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="0" />
       <LineId Id="4" Count="0" />
     </LineIds>
-    <LineIds Name="FB_UpDown.METH_Exit">
+    <LineIds Name="FB_Tilt_A.METH_Exit">
       <LineId Id="5" Count="7" />
       <LineId Id="14" Count="2" />
       <LineId Id="4" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="20" Count="0" />
     </LineIds>
-    <LineIds Name="FB_UpDown.METH_Main">
+    <LineIds Name="FB_Tilt_A.METH_Main">
       <LineId Id="5" Count="29" />
       <LineId Id="4" Count="0" />
     </LineIds>

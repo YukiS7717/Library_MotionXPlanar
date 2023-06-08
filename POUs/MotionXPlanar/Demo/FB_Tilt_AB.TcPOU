@@ -51,7 +51,7 @@ ErrorID := udiErrorID;]]></ST>
     </Implementation>
     <Method Name="METH_Busy" Id="{7d2f564b-c036-4953-ae6e-29ffa805a290}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Busy : BOOL
+METHOD INTERNAL METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF fbFB_Mover.Error THEN
@@ -192,7 +192,7 @@ END_CASE]]></ST>
     <Method Name="METH_Enter" Id="{313dd673-125b-4109-b214-a11153024c8d}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Enter : BOOL
+METHOD INTERNAL METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Input 内部変数に移す
@@ -207,7 +207,7 @@ lrJerk := Jerk;
     <Method Name="METH_Exit" Id="{49d1a9c7-504a-4c53-beda-251ec63662bc}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Exit : BOOL
+METHOD INTERNAL METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := FALSE;
@@ -221,13 +221,17 @@ uiState := 0;
 lrVelocity := 0;
 lrAcceleration := 0;
 lrDeceleration := 0;
-lrJerk := 0;]]></ST>
+lrJerk := 0;
+
+//FBの初期化
+fbMoveA(fbMover:= THIS^.fbMover, Execute:= FALSE); 
+fbMoveB(fbMover:= THIS^.fbMover, Execute:= FALSE); ]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{700f0533-fc3d-4187-973e-2695c2d08006}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Main : BOOL
+METHOD INTERNAL METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Doneに遷移
@@ -305,6 +309,9 @@ END_IF]]></ST>
       <LineId Id="5" Count="7" />
       <LineId Id="14" Count="2" />
       <LineId Id="4" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="23" Count="0" />
     </LineIds>
     <LineIds Name="FB_Tilt_AB.METH_Main">
       <LineId Id="5" Count="29" />

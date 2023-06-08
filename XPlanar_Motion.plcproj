@@ -54,6 +54,12 @@
     <Compile Include="POUs\MotionXPlanar\Demo\FB_Rotate_C.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\MotionXPlanar\Demo\FB_Tilt_A.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MotionXPlanar\Demo\FB_Tilt_B.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\MotionXPlanar\Demo\FB_UpDown.TcPOU">
       <SubType>Code</SubType>
     </Compile>

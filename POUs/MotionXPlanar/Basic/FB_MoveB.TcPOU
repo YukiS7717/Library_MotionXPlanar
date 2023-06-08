@@ -48,7 +48,7 @@ ErrorID := udiErrorID;]]></ST>
     </Implementation>
     <Method Name="METH_Busy" Id="{79f51cc3-e95a-4bad-b4da-50ca607e8601}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Busy : BOOL
+METHOD INTERNAL METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
@@ -90,7 +90,7 @@ END_CASE]]></ST>
     </Method>
     <Method Name="METH_Enter" Id="{5f9a41b4-098b-488f-85ba-b8a5895db5db}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Enter : BOOL
+METHOD INTERNAL METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Input 内部変数に移す
@@ -104,7 +104,7 @@ lrJerk := Jerk;
     </Method>
     <Method Name="METH_Exit" Id="{21f5cad7-bd12-4237-814d-ed0257c8e35b}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Exit : BOOL
+METHOD INTERNAL METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := FALSE;
@@ -123,7 +123,7 @@ lrJerk := 0;]]></ST>
     </Method>
     <Method Name="METH_Main" Id="{f09c1c56-7ade-4a5a-abdb-2c9c86a841e5}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Main : BOOL
+METHOD INTERNAL METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Doneに遷移

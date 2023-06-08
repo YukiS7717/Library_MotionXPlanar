@@ -21,7 +21,7 @@ END_VAR
     </Implementation>
     <Method Name="METH_Busy" Id="{e4701e2b-57b4-45d2-856e-6a77476b5fa3}">
       <Declaration><![CDATA[//{warning 'add method implementation '}
-METHOD ABSTRACT METH_Busy : BOOL
+METHOD INTERNAL ABSTRACT METH_Busy : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[]]></ST>
@@ -29,7 +29,7 @@ METHOD ABSTRACT METH_Busy : BOOL
     </Method>
     <Method Name="METH_CommandAborted" Id="{8a06b7e9-cd23-4ca9-8366-3af741ea5757}">
       <Declaration><![CDATA[//{warning 'add method implementation '}
-METHOD PROTECTED METH_CommandAborted : BOOL
+METHOD INTERNAL METH_CommandAborted : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_CommandAborted := TRUE;
@@ -38,7 +38,7 @@ Prop_Busy := FALSE;]]></ST>
     </Method>
     <Method Name="METH_Done" Id="{27acebb5-47cc-4300-80a1-d92566086c17}">
       <Declaration><![CDATA[//{warning 'add method implementation '}
-METHOD PROTECTED METH_Done : BOOL
+METHOD INTERNAL METH_Done : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := TRUE;
@@ -46,7 +46,7 @@ Prop_Busy := FALSE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Enter" Id="{b065b700-5499-485c-a7d4-22501d5dac27}">
-      <Declaration><![CDATA[METHOD ABSTRACT METH_Enter : BOOL
+      <Declaration><![CDATA[METHOD INTERNAL ABSTRACT METH_Enter : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -56,7 +56,7 @@ END_VAR
     </Method>
     <Method Name="METH_Error" Id="{4884cb9b-c09d-440b-91cb-bbf4984ee557}">
       <Declaration><![CDATA[//{warning 'add method implementation '}
-METHOD PROTECTED METH_Error : BOOL]]></Declaration>
+METHOD internal METH_Error : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Error := TRUE;
 Prop_Busy := FALSE;]]></ST>
@@ -64,7 +64,7 @@ Prop_Busy := FALSE;]]></ST>
     </Method>
     <Method Name="METH_Execute" Id="{ca35221a-7db9-428d-afe1-aeeda118cf30}">
       <Declaration><![CDATA[//{warning 'add method implementation '}
-METHOD PROTECTED METH_Execute : BOOL
+METHOD INTERNAL METH_Execute : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Execute := TRUE;
@@ -72,7 +72,7 @@ Prop_Busy := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="METH_Exit" Id="{43f1cf57-ff0a-40a4-b771-62f5990519e7}">
-      <Declaration><![CDATA[METHOD ABSTRACT METH_Exit : BOOL
+      <Declaration><![CDATA[METHOD INTERNAL ABSTRACT METH_Exit : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -81,7 +81,7 @@ END_VAR
       </Implementation>
     </Method>
     <Method Name="METH_Main" Id="{b81c8b24-0878-4853-9aa3-372995571ff9}">
-      <Declaration><![CDATA[METHOD ABSTRACT METH_Main : BOOL
+      <Declaration><![CDATA[METHOD INTERNAL ABSTRACT METH_Main : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
