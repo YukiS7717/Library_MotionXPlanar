@@ -38,17 +38,6 @@ VAR
 	
 	//ローカル
 	fbFB_Mover							: MC_PlanarFeedback;
-	fbMoveZ								: FB_MoveZ;
-	fbMoveB								: FB_MoveB;
-	fbMoveToPosition					: FB_MoveToPosition;
-	fbCamIn_S_x							: MC_CamIn;
-	fbCamIn_S_y							: MC_CamIn;
-	fbCamIn_S_a							: MC_CamIn;
-	fbCamIn_S_b							: MC_CamIn;
-	fbCamOut_S_x						: MC_CamOut;
-	fbCamOut_S_y						: MC_CamOut;
-	fbCamOut_S_a						: MC_CamOut;
-	fbCamOut_S_b						: MC_CamOut;
 	fbAbsolute_M						: MC_MoveAbsolute;
 	stMoverVector_ActPos				: MoverVector;
 	stMoverVector_ActVel				: MoverVector;
@@ -59,26 +48,10 @@ VAR
 END_VAR
 
 VAR CONSTANT
-	//傾き量
-	lrStrringStartPos_x					: LREAL := -40;
-	lrStrringStartPos_z					: LREAL := 4;
-	lrStrringStartPos_b					: LREAL := -2;
-	lrStrringEndPos_z					: LREAL := 2;
-	lrStrringEndPos_b					: LREAL := 0;
-	
 	//State
-	State_StartPosition					: UINT := 0;
-	State_StartZ						: UINT := 10;
-	State_StartB						: UINT := 20;
-	State_StartExternal					: UINT := 30;
-	State_CamIn							: UINT := 40;
-	State_StrringPlus					: UINT := 50;
-	State_StrringMinus					: UINT := 60;
-	State_EndExternal					: UINT := 70;
-	State_CamOut						: UINT := 80;
-	State_EndPosition					: UINT := 90;
-	State_EndZ							: UINT := 100;
-	State_EndB							: UINT := 110;
+	State_StartExternal					: UINT := 0;
+	State_Run							: UINT := 10;
+	State_EndExternal					: UINT := 20;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[Prop_Execute := Execute;
@@ -88,7 +61,8 @@ Busy := bBusy;
 Done := bDone;
 CommandAborted := bCommandAborted;
 Error := bError;
-ErrorID := udiErrorID;]]></ST>
+ErrorID := udiErrorID;
+]]></ST>
     </Implementation>
     <Action Name="ACT_SetExternalSetPoint" Id="{fcba04b3-a4aa-42c0-a53a-6965af2665e8}">
       <Implementation>
@@ -121,7 +95,7 @@ THIS^.fbMover.SetExternalSetpoint(
     </Action>
     <Method Name="METH_Busy" Id="{cc5af61f-5c37-488f-96b8-260e3138b41d}">
       <Declaration><![CDATA[//{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Busy : BOOL]]></Declaration>
+METHOD INTERNAL METH_Busy : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
 {warning restore C0371}
@@ -144,35 +118,19 @@ IF bSetExternalSetPoint THEN
 	ACT_SetExternalSetPoint();	
 END_IF
 CASE THIS^.uiState OF
-	0:
+	State_StartExternal:
 	// ExternalSetpoint開始
 	bSetExternalSetPoint := TRUE;
 	stExternalOpt.mode := MC_EXTERNAL_SET_POSITION_MODE.Relative;
-	THIS^.fbMover.StartExternalSetpointGeneration(commandFeedback:= 0, options:= stExternalOpt);
-	THIS^.uiState := State_StrringPlus;
-	
-	State_StrringPlus: 
+	THIS^.fbMover.StartExternalSetpointGeneration(commandFeedback:= fbFB_Mover, options:= stExternalOpt);
+	THIS^.uiState := State_Run;
+		
+	State_Run: 
 	//+360
 	THIS^.fbAbsolute_M(
 		Axis:= THIS^.fbAxis_Master, 
 		Execute:= TRUE, 
 		Position:= dutPosition.x, 
-		Velocity:= THIS^.lrVelocity, 
-		Acceleration:= THIS^.lrAcceleration, 
-		Deceleration:= THIS^.lrDeceleration, 
-		Jerk:= THIS^.lrJerk);
-		
-	IF THIS^.fbAbsolute_M.Done THEN
-		THIS^.uiState := State_StrringMinus;
-		THIS^.fbAbsolute_M(Axis:= THIS^.fbAxis_Master, Execute:= FALSE); 
-	END_IF
-	
-	State_StrringMinus: 
-	//原点に戻る
-	THIS^.fbAbsolute_M(
-		Axis:= THIS^.fbAxis_Master, 
-		Execute:= TRUE, 
-		Position:= 0, 
 		Velocity:= THIS^.lrVelocity, 
 		Acceleration:= THIS^.lrAcceleration, 
 		Deceleration:= THIS^.lrDeceleration, 
@@ -186,8 +144,13 @@ CASE THIS^.uiState OF
 	State_EndExternal:
 	// ExternalSetpoint終了
 	bSetExternalSetPoint := FALSE;
-	THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);
-	THIS^.uiState := 16#FFFF;
+	THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= fbFB_Mover);
+	THIS^.uiState := 40;
+	
+	40:
+	IF fbFB_Mover.Done THEN
+		THIS^.uiState := 16#FFFF;
+	END_IF
 	
 	16#FFFF:
 	METH_Done();
@@ -200,7 +163,7 @@ fbFB_Mover.Update();]]></ST>
     <Method Name="METH_Enter" Id="{4502362c-917c-4ca6-a597-edc6f4f6a69a}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Enter : BOOL
+METHOD INTERNAL METH_Enter : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Input 内部変数に移す
@@ -214,7 +177,7 @@ lrJerk := Jerk;]]></ST>
     <Method Name="METH_Exit" Id="{4812ad40-6f05-49ac-afc5-26a42ceafd59}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD  METH_Exit : BOOL
+METHOD INTERNAL METH_Exit : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[Prop_Done := FALSE;
@@ -231,6 +194,9 @@ lrDeceleration := 0;
 lrJerk := 0;
 bSetExternalSetPoint :=FALSE;
 
+//FBの初期化
+THIS^.fbAbsolute_M(Axis:= THIS^.fbAxis_Master, Execute:= FALSE); 
+
 //External Set Point 終了
 THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);]]></ST>
       </Implementation>
@@ -238,7 +204,7 @@ THIS^.fbMover.StopExternalSetpointGeneration(commandFeedback:= 0);]]></ST>
     <Method Name="METH_Main" Id="{8301a965-0a45-46d0-8169-1c57b4579654}">
       <Declaration><![CDATA[ {attribute 'hide'}
 //{error 'add method implementation or delete method to use base implementation'}
-METHOD METH_Main : BOOL
+METHOD INTERNAL METH_Main : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[//Doneに遷移
@@ -278,6 +244,7 @@ END_IF]]></ST>
       <LineId Id="41" Count="1" />
       <LineId Id="45" Count="4" />
       <LineId Id="9" Count="0" />
+      <LineId Id="128" Count="0" />
     </LineIds>
     <LineIds Name="FB_ExternalSetPoint.ACT_SetExternalSetPoint">
       <LineId Id="27" Count="0" />
@@ -301,8 +268,7 @@ END_IF]]></ST>
       <LineId Id="519" Count="2" />
       <LineId Id="524" Count="0" />
       <LineId Id="523" Count="0" />
-      <LineId Id="390" Count="0" />
-      <LineId Id="658" Count="0" />
+      <LineId Id="664" Count="1" />
       <LineId Id="391" Count="0" />
       <LineId Id="450" Count="0" />
       <LineId Id="392" Count="3" />
@@ -312,16 +278,14 @@ END_IF]]></ST>
       <LineId Id="407" Count="0" />
       <LineId Id="406" Count="0" />
       <LineId Id="405" Count="0" />
-      <LineId Id="250" Count="0" />
-      <LineId Id="410" Count="0" />
-      <LineId Id="449" Count="0" />
-      <LineId Id="411" Count="11" />
-      <LineId Id="408" Count="0" />
       <LineId Id="423" Count="0" />
       <LineId Id="525" Count="0" />
       <LineId Id="528" Count="1" />
       <LineId Id="532" Count="0" />
-      <LineId Id="526" Count="0" />
+      <LineId Id="662" Count="0" />
+      <LineId Id="666" Count="1" />
+      <LineId Id="669" Count="1" />
+      <LineId Id="668" Count="0" />
       <LineId Id="473" Count="0" />
       <LineId Id="511" Count="1" />
       <LineId Id="454" Count="0" />
@@ -338,6 +302,8 @@ END_IF]]></ST>
       <LineId Id="14" Count="2" />
       <LineId Id="4" Count="0" />
       <LineId Id="22" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="1" />
       <LineId Id="20" Count="0" />
       <LineId Id="19" Count="0" />
       <LineId Id="21" Count="0" />
